@@ -54,12 +54,14 @@ dbg::GraphAlignment PrecorrectBulge(dbg::Edge &bulge, double reliable_coverage) 
         return std::move(res);
     } else {
         res = FindOnlyPathForward(bulge.end()->rc(), reliable_coverage, bulge.size() + 20, &bulge.start()->rc()).RC();
-        if(&res.start() == bulge.start() && res.startClosed() && res.len() + 20 > bulge.size())
+        if(&res.start() == bulge.start() && res.startClosed() && res.len() + 20 > bulge.size()){
             cout << "PrecorrectBulge condition 2 time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
             return std::move(res);
-        else
+        }
+        else {
             cout << "PrecorrectBulge condition 3 time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
             return dbg::GraphAlignment() + bulge;
+        }
     }
 }
 
