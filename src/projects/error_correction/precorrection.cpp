@@ -5,6 +5,7 @@
 
 dbg::GraphAlignment FindOnlyPathForward(dbg::Vertex &start, double reliable_coverage, size_t max_size, dbg::Vertex *finish = nullptr) {
     dbg::GraphAlignment res(start);
+    clock_t t = clock();
     size_t sz = 0;
     while(sz < max_size) {
         dbg::Edge *next = nullptr;
@@ -29,27 +30,35 @@ dbg::GraphAlignment FindOnlyPathForward(dbg::Vertex &start, double reliable_cove
         if(&res.finish() == finish)
             break;
     }
+    cout << "FindOnlyPathForward time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
     return std::move(res);
 }
 
 dbg::GraphAlignment PrecorrectTip(const Segment<dbg::Edge> &seg, double reliable_coverage) {
+    clock_t t =  clock();
     dbg::GraphAlignment res = FindOnlyPathForward(*seg.contig().start(), reliable_coverage, seg.size());
     if(res.len() == seg.size()) {
+        cout << "PrecorrectTip condition 1 time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
         return std::move(res);
     } else {
+        cout << "PrecorrectTip condition 2 time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
         return dbg::GraphAlignment({seg});
     }
 }
 
 dbg::GraphAlignment PrecorrectBulge(dbg::Edge &bulge, double reliable_coverage) {
+    clock_t t = clock();
     dbg::GraphAlignment res = FindOnlyPathForward(*bulge.start(), reliable_coverage, bulge.size() + 20, bulge.end());
     if(&res.finish() == bulge.end() && res.endClosed() && res.len() + 20 > bulge.size()) {
+        cout << "PrecorrectBulge condition 1 time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
         return std::move(res);
     } else {
         res = FindOnlyPathForward(bulge.end()->rc(), reliable_coverage, bulge.size() + 20, &bulge.start()->rc()).RC();
         if(&res.start() == bulge.start() && res.startClosed() && res.len() + 20 > bulge.size())
+            cout << "PrecorrectBulge condition 2 time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
             return std::move(res);
         else
+            cout << "PrecorrectBulge condition 3 time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
             return dbg::GraphAlignment() + bulge;
     }
 }
@@ -57,6 +66,7 @@ dbg::GraphAlignment PrecorrectBulge(dbg::Edge &bulge, double reliable_coverage) 
 
 size_t Precorrect(logging::Logger &logger, size_t threads, dbg::SparseDBG &dbg, RecordStorage &reads_storage,
                   double reliable_threshold) {
+    clock_t t = clock();
     logger.info() << "Precorrecting reads" << std::endl;
     ParallelRecordCollector<std::string> results(threads);
     ParallelCounter cnt(threads);
@@ -99,5 +109,6 @@ size_t Precorrect(logging::Logger &logger, size_t threads, dbg::SparseDBG &dbg, 
     }
     reads_storage.applyCorrections(logger, threads);
     logger.info() << "Corrected simple errors in " << cnt.get() << " reads" << std::endl;
+    cout << "Precorrect time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
     return cnt.get();
 }
