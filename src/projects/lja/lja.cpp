@@ -75,7 +75,7 @@ AlternativeCorrection(logging::Logger &logger, const std::experimental::filesyst
             const io::Library &reads_lib, const io::Library &pseudo_reads_lib, const io::Library &paths_lib,
         size_t threads, size_t k, size_t w, double threshold, double reliable_coverage,
 bool close_gaps, bool remove_bad, bool skip, bool debug, bool load) {
-    clock_t = clock();
+    clock_t t = clock();
     logger.info() << "Performing initial correction with k = " << k << std::endl;
     if (k % 2 == 0) {
         logger.info() << "Adjusted k from " << k << " to " << (k + 1) << " to make it odd" << std::endl;
