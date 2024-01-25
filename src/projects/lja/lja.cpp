@@ -177,11 +177,11 @@ std::vector<std::experimental::filesystem::path> NoCorrection(logging::Logger &l
 }
 
 std::vector<std::experimental::filesystem::path> SecondPhase(
-  clock_t t = clock();
     logging::Logger &logger, const std::experimental::filesystem::path &dir,
     const io::Library &reads_lib, const io::Library &pseudo_reads_lib,
     const io::Library &paths_lib, size_t threads, size_t k, size_t w, double threshold, double reliable_coverage,
     size_t unique_threshold, bool diploid, bool skip, bool debug, bool load) {
+    clock_t t = clock();
     logger.info() << "Performing second phase of error correction using k = " << k << std::endl;
     if (k%2==0) {
         logger.info() << "Adjusted k from " << k << " to " << (k + 1)
