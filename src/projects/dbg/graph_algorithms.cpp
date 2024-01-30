@@ -1,10 +1,13 @@
 #include "graph_algorithms.hpp"
+#include <time.h>
 
 using namespace hashing;
 namespace dbg {
     template<class Iterator>
     void fillCoverage(SparseDBG &sdbg, logging::Logger &logger, Iterator begin, Iterator end, size_t threads,
                       const RollingHash &hasher, const size_t min_read_size) {
+        
+        clock_t t = clock();
         typedef typename Iterator::value_type ContigType;
         logger.info() << "Starting to fill edge coverages" << std::endl;
         ParallelRecordCollector<size_t> lens(threads);
@@ -25,11 +28,14 @@ namespace dbg {
         for (size_t l: lens) {
             lens_distr[std::min(l, lens_distr.size() - 1)] += 1;
         }
+
+        cout << "fillCoverage time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
     }
 
     SparseDBG constructSparseDBGFromReads(logging::Logger &logger, const io::Library &reads_file, size_t threads,
                                           const RollingHash &hasher, const std::vector<htype> &hash_list,
                                           const size_t w) {
+        clock_t t = clock();
         logger.info() << "Starting construction of sparse de Bruijn graph" << std::endl;
         SparseDBG sdbg(hash_list.begin(), hash_list.end(), hasher);
         logger.info() << "Vertex map constructed." << std::endl;
@@ -37,10 +43,13 @@ namespace dbg {
         logger.info() << "Filling edge sequences." << std::endl;
         FillSparseDBGEdges(sdbg, reader.begin(), reader.end(), logger, threads, w + hasher.getK() - 1);
         logger.info() << "Finished sparse de Bruijn graph construction." << std::endl;
+
+        cout << "constructSparseDBGFromReads time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
         return std::move(sdbg);
     }
 
     void tieTips(logging::Logger &logger, SparseDBG &sdbg, size_t w, size_t threads) {
+        clock_t t = clock();
         logger.info() << " Collecting tips " << std::endl;
 //    TODO reduce memory consumption!! A lot of duplicated k-mer storing
         ParallelRecordCollector<std::pair<Vertex *, Sequence>> old_edges(threads);
@@ -77,6 +86,7 @@ namespace dbg {
         logger.info() << "Filling graph with new edges." << std::endl;
         FillSparseDBGEdges(sdbg, new_edges.begin(), new_edges.end(), logger, threads, sdbg.hasher().getK() + 1);
         logger.info() << "Finished fixing sparse de Bruijn graph." << std::endl;
+        cout << "tieTips time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
     }
 
     void UpdateVertexTips(Vertex &rec, ParallelRecordCollector<Vertex *> &queue) {
@@ -95,6 +105,7 @@ namespace dbg {
     }
 
     void findTips(logging::Logger &logger, SparseDBG &sdbg, size_t threads) {
+        clock_t t = clock();
         logger.info() << " Finding tips " << std::endl;
 //    TODO reduce memory consumption!! A lot of duplicated k-mer storing
         ParallelRecordCollector<Vertex *> queue(threads);
@@ -135,9 +146,11 @@ namespace dbg {
             }
         }
         logger.info() << "Tip finding finished" << std::endl;
+        cout << "findTips time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
     }
 
     void mergeLoop(Path path) {
+        clock_t t = clock();
         VERIFY(path.start() == path.finish())
         if (path.size() % 2 == 0 && path.getVertex(path.size() / 2) == path.start().rc()) {
             path = path.subPath(0, path.size() / 2);
@@ -157,9 +170,11 @@ namespace dbg {
         Edge &rc_new_edge = path.finish().rc().addEdgeLockFree(
                 Edge(&path.finish().rc(), &path.start().rc(), (!newSeq).Subseq(k)));
         rc_new_edge.incCov(cov - rc_new_edge.intCov());
+        cout << "mergeLoop time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
     }
 
     void MergeEdge(SparseDBG &sdbg, Vertex &start, Edge &edge) {
+        //clock_t t = clock();
         Path path = Path::WalkForward(edge);
         Vertex &end = path.finish().rc();
         if (path.size() > 1 && end.hash() >= start.hash()) {
@@ -183,9 +198,11 @@ namespace dbg {
             if (start != end)
                 end.unlock();
         }
+        //cout << "MergeEdge time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
     }
 
     void mergeLinearPaths(logging::Logger &logger, SparseDBG &sdbg, size_t threads) {
+        clock_t t = clock();
         logger.trace() << "Merging linear unbranching paths" << std::endl;
         std::function<void(size_t, std::pair<const htype, Vertex> &)> task =
                 [&sdbg](size_t pos, std::pair<const htype, Vertex> &pair) {
@@ -208,6 +225,7 @@ namespace dbg {
     }
 
     void mergeCyclicPaths(logging::Logger &logger, SparseDBG &sdbg, size_t threads) {
+        clock_t t = clock();
         logger.trace() << "Merging cyclic paths" << std::endl;
         ParallelRecordCollector<htype> loops(threads);
         std::function<void(size_t, std::pair<const htype, Vertex> &)> task =
@@ -238,9 +256,11 @@ namespace dbg {
             mergeLoop(path);
         }
         logger.trace() << "Finished merging cyclic paths" << std::endl;
+        cout << "mergeCyclicPaths time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
     }
 
     void mergeAll(logging::Logger &logger, SparseDBG &sdbg, size_t threads) {
+        clock_t t = clock();
         logger.trace() << "Merging unbranching paths" << std::endl;
         mergeLinearPaths(logger, sdbg, threads);
 //    sdbg.checkConsistency(threads, logger);
@@ -250,10 +270,12 @@ namespace dbg {
         sdbg.removeMarked();
         logger.trace() << "Finished removing isolated vertices" << std::endl;
         logger.trace() << "Finished merging unbranching paths" << std::endl;
+        cout << "mergeAll time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
     }
 
     void CalculateCoverage(const std::experimental::filesystem::path &dir, const RollingHash &hasher, const size_t w,
                            const io::Library &lib, size_t threads, logging::Logger &logger, SparseDBG &dbg) {
+        clock_t t = clock();
         logger.info() << "Calculating edge coverage." << std::endl;
         io::SeqReader reader(lib);
         fillCoverage(dbg, logger, reader.begin(), reader.end(), threads, hasher, w + hasher.getK() - 1);
@@ -272,11 +294,13 @@ namespace dbg {
         }
 //    dbg.printCoverageStats(logger);
         os.close();
+        cout << "CalculateCoverage time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
     }
 
     std::experimental::filesystem::path
     alignLib(logging::Logger &logger, SparseDBG &dbg, const io::Library &align_lib, const RollingHash &hasher,
              const size_t w, const std::experimental::filesystem::path &dir, size_t threads) {
+        clock_t t = clock();
         logger.info() << "Aligning reads" << std::endl;
         ParallelRecordCollector<std::string> alignment_results(threads);
         std::string acgt = "ACGT";
@@ -311,10 +335,12 @@ namespace dbg {
         }
         os.close();
         logger.info() << "Finished read alignment. Results are in " << (dir / "alignments.txt") << std::endl;
+        cout << "alignLib time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
         return alignments_file;
     }
 
     SparseDBG LoadDBGFromFasta(const io::Library &lib, RollingHash &hasher, logging::Logger &logger, size_t threads) {
+        clock_t t = clock();
         logger.info() << "Loading graph from fasta" << std::endl;
         io::SeqReader reader(lib);
         ParallelRecordCollector<Sequence> sequences(threads);
@@ -333,6 +359,7 @@ namespace dbg {
         reader.reset();
         FillSparseDBGEdges(res, sequences.begin(), sequences.end(), logger, threads, hasher.getK() + 1);
         logger.info() << "Finished loading graph" << std::endl;
+        cout << "LoadDBGFromFasta time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
         return std::move(res);
     }
 }
