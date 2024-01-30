@@ -26,11 +26,14 @@
 #include <omp.h>
 #include <unordered_set>
 #include <wait.h>
+#include <time.h>
+
 using namespace dbg;
 
 void analyseGenome(SparseDBG &dbg, const std::string &ref_file, size_t min_len,
                    const std::experimental::filesystem::path &path_dump,
                    const std::experimental::filesystem::path &mult_dump, logging::Logger &logger) {
+    clock_t t = clock();
     logger.info() << "Reading reference" << std::endl;
     std::vector<StringContig> ref = io::SeqReader(ref_file).readAll();
     logger.info() << "Finished reading reference. Starting alignment" << std::endl;
@@ -97,9 +100,12 @@ void analyseGenome(SparseDBG &dbg, const std::string &ref_file, size_t min_len,
     logger << cov_good << std::endl << cov_good_len << std::endl;
     logger.info() << "Coverages of edges outside genome path" << std::endl;
     logger << cov_bad << std::endl << cov_bad_len << std::endl;
+
+    cout << "analyseGenome time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
 }
 
 void LoadCoverage(const std::experimental::filesystem::path &fname, logging::Logger &logger, SparseDBG &dbg) {
+    clock_t t = clock();
     logger.info() << "Loading edge coverages." << std::endl;
     std::ifstream is;
     is.open(fname);
@@ -124,6 +130,8 @@ void LoadCoverage(const std::experimental::filesystem::path &fname, logging::Log
     }
     is.close();
     logger.info() << "Finished loading edge coverages." << std::endl;
+
+    cout << "LoadCoverage time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
 }
 
 std::string constructMessage() {
@@ -144,6 +152,7 @@ std::string constructMessage() {
 }
 
 int main(int argc, char **argv) {
+    clock_t t = clock();
     CLParser parser({"vertices=none", "unique=none", "coverages=none", "dbg=none", "output-dir=",
                      "threads=16", "k-mer-size=", "window=2000", "base=239", "debug", "disjointigs=none", "reference=none",
                      "simplify", "coverage", "cov-threshold=2", "rel-threshold=10", "tip-correct",
@@ -548,5 +557,6 @@ int main(int argc, char **argv) {
     }
     logger.info() << "DBG construction finished" << std::endl;
     logger.info() << "Please cite our paper if you use jumboDBG in your research: https://www.biorxiv.org/content/10.1101/2020.12.10.420448" << std::endl;
+    cout << "dbg main time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
     return 0;
 }
