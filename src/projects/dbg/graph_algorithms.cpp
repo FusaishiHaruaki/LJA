@@ -256,7 +256,7 @@ namespace dbg {
             mergeLoop(path);
         }
         logger.trace() << "Finished merging cyclic paths" << std::endl;
-        cout << "mergeCyclicPaths time: " << t.get() << endl;
+        cout << "mergeCyclicPaths atime: " << t.get() << endl;
     }
 
     void mergeAll(logging::Logger &logger, SparseDBG &sdbg, size_t threads) {
@@ -270,7 +270,7 @@ namespace dbg {
         sdbg.removeMarked();
         logger.trace() << "Finished removing isolated vertices" << std::endl;
         logger.trace() << "Finished merging unbranching paths" << std::endl;
-        cout << "mergeAll time: " << t.get() << endl;
+        cout << "mergeAll atime: " << t.get() << endl;
     }
 
     void CalculateCoverage(const std::experimental::filesystem::path &dir, const RollingHash &hasher, const size_t w,

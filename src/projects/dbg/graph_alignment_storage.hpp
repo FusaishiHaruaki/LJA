@@ -1,6 +1,7 @@
 #pragma once
 
 #include "compact_path.hpp"
+#include "common/logging.hpp"
 
 class AlignedRead {
 private:
@@ -200,6 +201,7 @@ void LoadAllReads(const std::experimental::filesystem::path &fname, const std::v
 
 template<class I>
 void RecordStorage::fill(I begin, I end, dbg::SparseDBG &dbg, size_t min_read_size, logging::Logger &logger, size_t threads) {
+    logging::TimeSpace t;
     if (track_cov) {
         logger.info() << "Cleaning edge coverages" << std::endl;
         for(dbg::Edge & edge: dbg.edges()) {
@@ -233,6 +235,7 @@ void RecordStorage::fill(I begin, I end, dbg::SparseDBG &dbg, size_t min_read_si
         VERIFY(std::get<0>(rec) < reads.size());
         reads[std::get<0>(rec)] = AlignedRead(std::get<1>(rec), std::move(std::get<2>(rec)));
     }
+    cout << "RecordStorage::fill time: " << t.get() << endl;
     logger.info() << "Alignment collection finished. Total length of alignments is " << cnt.get() << std::endl;
 }
 
