@@ -27,7 +27,7 @@ static size_t stage_num = 0;
 std::vector<Contig> ref;
 void PrintPaths(logging::Logger &logger, const std::experimental::filesystem::path &dir, const std::string &stage,
                 SparseDBG &dbg, RecordStorage &readStorage, const io::Library &paths_lib, bool small) {
-    clock_t t = clock();
+    logging::TimeSpace t;
     stage_num += 1;
     std::string stage_name = itos(stage_num) + "_" + stage;
     logger.info() << "Dumping current state. Stage id: " << stage_name << std::endl;
@@ -67,7 +67,7 @@ void PrintPaths(logging::Logger &logger, const std::experimental::filesystem::pa
         }
     }
     ref_os.close();
-    cout << "PrintPath time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
+    cout << "PrintPath time: " << t.get() << endl;
 }
 
 std::pair<std::experimental::filesystem::path, std::experimental::filesystem::path>
@@ -75,7 +75,7 @@ AlternativeCorrection(logging::Logger &logger, const std::experimental::filesyst
             const io::Library &reads_lib, const io::Library &pseudo_reads_lib, const io::Library &paths_lib,
         size_t threads, size_t k, size_t w, double threshold, double reliable_coverage,
 bool close_gaps, bool remove_bad, bool skip, bool debug, bool load) {
-    clock_t t = clock();
+    logging::TimeSpace t;
     logger.info() << "Performing initial correction with k = " << k << std::endl;
     if (k % 2 == 0) {
         logger.info() << "Adjusted k from " << k << " to " << (k + 1) << " to make it odd" << std::endl;
@@ -130,7 +130,7 @@ bool close_gaps, bool remove_bad, bool skip, bool debug, bool load) {
     std::experimental::filesystem::path res;
     res = dir / "corrected.fasta";
     logger.info() << "Initial correction results with k = " << k << " printed to " << res << std::endl;
-    cout << "Alternative Correction time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
+    cout << "Alternative Correction time: " << t.get() << endl;
     return {res, dir / "graph.fasta"};
 
 }
@@ -138,7 +138,7 @@ bool close_gaps, bool remove_bad, bool skip, bool debug, bool load) {
 std::vector<std::experimental::filesystem::path> NoCorrection(logging::Logger &logger, const std::experimental::filesystem::path &dir,
                 const io::Library &reads_lib, const io::Library &pseudo_reads_lib, const io::Library &paths_lib,
                 size_t threads, size_t k, size_t w, bool skip, bool debug, bool load) {
-    clock_t t = clock();
+    logging::TimeSpace t;
     logger.info() << "Performing initial correction with k = " << k << std::endl;
     if (k % 2 == 0) {
         logger.info() << "Adjusted k from " << k << " to " << (k + 1) << " to make it odd" << std::endl;
@@ -170,7 +170,7 @@ std::vector<std::experimental::filesystem::path> NoCorrection(logging::Logger &l
     };
     if(!skip)
         runInFork(ic_task);
-    cout << "NoCorrection time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
+    cout << "NoCorrection time: " << t.get() << endl;
 
     return {dir/"corrected_reads.fasta", dir / "final_dbg.fasta", dir / "final_dbg.aln"};
   
@@ -181,7 +181,7 @@ std::vector<std::experimental::filesystem::path> SecondPhase(
     const io::Library &reads_lib, const io::Library &pseudo_reads_lib,
     const io::Library &paths_lib, size_t threads, size_t k, size_t w, double threshold, double reliable_coverage,
     size_t unique_threshold, bool diploid, bool skip, bool debug, bool load) {
-    clock_t t = clock();
+    logging::TimeSpace t;
     logger.info() << "Performing second phase of error correction using k = " << k << std::endl;
     if (k%2==0) {
         logger.info() << "Adjusted k from " << k << " to " << (k + 1)
@@ -249,7 +249,7 @@ std::vector<std::experimental::filesystem::path> SecondPhase(
     res = dir / "corrected_reads.fasta";
     logger.info() << "Second phase results with k = " << k << " printed to "
                   << res << std::endl;
-    cout << "SecondPhase time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
+    cout << "SecondPhase time: " << t.get() << endl;
     return {res, dir / "final_dbg.fasta", dir / "final_dbg.aln"};
 }
 
@@ -258,7 +258,7 @@ std::vector<std::experimental::filesystem::path> MDBGPhase(
         const std::experimental::filesystem::path &dir,
         const std::experimental::filesystem::path &graph_fasta,
         const std::experimental::filesystem::path &read_paths, bool skip, bool debug) {
-    clock_t t = clock();
+    logging::TimeSpace t;
     logger.info() << "Performing repeat resolution by transforming de Bruijn graph into Multiplex de Bruijn graph" << std::endl;
     std::function<void()> ic_task = [&logger, threads, debug, k, kmdbg, &graph_fasta, unique_threshold, diploid, &read_paths, &dir] {
         hashing::RollingHash hasher(k, 239);
@@ -275,7 +275,7 @@ std::vector<std::experimental::filesystem::path> MDBGPhase(
     };
     if(!skip)
         runInFork(ic_task);
-    cout << "MDGBPhase time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
+    cout << "MDBGPhase time: " << t.get() << endl;
     return {dir / "assembly.hpc.fasta", dir / "mdbg.hpc.gfa"};
 }
 
@@ -285,7 +285,7 @@ std::vector<std::experimental::filesystem::path> PolishingPhase(
         const std::experimental::filesystem::path &gfa_file,
         const std::experimental::filesystem::path &corrected_reads,
         const io::Library &reads, size_t dicompress, size_t min_alignment, bool skip, bool debug) {
-    clock_t t = clock();
+    logging::TimeSpace t;
     logger.info() << "Performing polishing and homopolymer uncompression" << std::endl;
     std::function<void()> ic_task = [&logger, threads, &output_dir, debug, &gfa_file, &corrected_reads, &reads, dicompress, min_alignment, &dir] {
         io::SeqReader reader(corrected_reads);
@@ -308,7 +308,7 @@ std::vector<std::experimental::filesystem::path> PolishingPhase(
     if(!skip)
         runInFork(ic_task);
 
-    cout << "PolishingPhase time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
+    cout << "PolishingPhase time: " << t.get() << endl;
     return {output_dir / "assembly.fasta", output_dir / "mdbg.gfa"};
 }
 
@@ -353,6 +353,7 @@ int main(int argc, char **argv) {
                     {"reads", "paths", "ref"},
                     {"o=output-dir", "t=threads", "k=k-mer-size","w=window", "K=K-mer-size","W=Window", "h=help"},
                     constructMessage());
+    logging::TimeSpace t;
     parser.parseCL(argc, argv);
     if (parser.getCheck("help")) {
         std::cout << parser.message() << std::endl;
@@ -454,5 +455,6 @@ int main(int argc, char **argv) {
     logger.info() << "Final graph can be found here: " << uncompressed_results[1] << std::endl;
     logger.info() << "Final assembly can be found here: " << uncompressed_results[0] << std::endl;
     logger.info() << "LJA pipeline finished" << std::endl;
+    cout << "LJA total time: " << t.get() << endl;
     return 0;
 }

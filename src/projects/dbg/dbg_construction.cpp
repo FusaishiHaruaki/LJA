@@ -7,7 +7,7 @@ using namespace dbg;
 std::vector<hashing::htype>
 findJunctions(logging::Logger &logger, const std::vector<Sequence> &disjointigs, const hashing::RollingHash &hasher,
               size_t threads) {
-    clock_t t = clock();
+    logging::TimeSpace t;
     bloom_parameters parameters;
     parameters.projected_element_count = std::max(total_size(disjointigs) - hasher.getK() * disjointigs.size(), size_t(1000));
     std::vector<Sequence> split_disjointigs;
@@ -80,13 +80,13 @@ findJunctions(logging::Logger &logger, const std::vector<Sequence> &disjointigs,
     __gnu_parallel::sort(res.begin(), res.end());
     res.erase(std::unique(res.begin(), res.end()), res.end());
     logger.info() << "Collected " << res.size() << " junctions." << std::endl;
-    cout << "findJunctions time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
+    cout << "findJunctions time: " << t.get() << endl;
     return res;
 }
 
 SparseDBG constructDBG(logging::Logger &logger, const std::vector<hashing::htype> &vertices, const std::vector<Sequence> &disjointigs,
              const RollingHash &hasher, size_t threads) {
-    clock_t t = clock();
+    logging::TimeSpace t;
     logger.info() << "Starting DBG construction." << std::endl;
     SparseDBG dbg(vertices.begin(), vertices.end(), hasher);
     logger.info() << "Vertices created." << std::endl;
@@ -123,7 +123,7 @@ SparseDBG constructDBG(logging::Logger &logger, const std::vector<hashing::htype
     logger.info() << "Ended merging edges. Resulting size " << dbg.size() << std::endl;
     logger.trace() << "Statistics for de Bruijn graph:" << std::endl;
     printStats(logger, dbg);
-    cout << "constructDBG time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
+    cout << "constructDBG time: " << t.get() << endl;
     return std::move(dbg);
 }
 
@@ -161,7 +161,7 @@ inline std::vector<htype> readHashs(std::istream &is) {
 SparseDBG DBGPipeline(logging::Logger &logger, const RollingHash &hasher, size_t w, const io::Library &lib,
                       const std::experimental::filesystem::path &dir, size_t threads, const string &disjointigs_file,
                       const string &vertices_file) {
-    clock_t t = clock();
+    logging::TimeSpace t;
     std::experimental::filesystem::path df;
     if (disjointigs_file == "none") {
         std::function<void()> task = [&logger, &lib, &threads, &w, &dir, &hasher]() {
@@ -202,6 +202,6 @@ SparseDBG DBGPipeline(logging::Logger &logger, const RollingHash &hasher, size_t
         vertices = readHashs(is);
         is.close();
     }
-    cout << "without construction, DBGPipeline time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
+    cout << "without construction, DBGPipeline time: " << t.get() << endl;
     return std::move(constructDBG(logger, vertices, disjointigs, hasher, threads));
 }

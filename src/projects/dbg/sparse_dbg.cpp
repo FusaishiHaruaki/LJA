@@ -594,7 +594,7 @@ std::array<Vertex *, 2> SparseDBG::getVertices(hashing::htype hash) {
 }
 
 void SparseDBG::fillAnchors(size_t w, logging::Logger &logger, size_t threads) {
-    clock_t t = clock();
+    logging::TimeSpace t;
     logger.trace() << "Adding anchors from long edges for alignment" << std::endl;
     ParallelRecordCollector<std::pair<const hashing::htype, EdgePosition>> res(threads);
     std::function<void(size_t, Edge &)> task = [&res, w, this](size_t pos, Edge &edge) {
@@ -619,12 +619,12 @@ void SparseDBG::fillAnchors(size_t w, logging::Logger &logger, size_t threads) {
         anchors.emplace(tmp);
     }
     logger.trace() << "Added " << anchors.size() << " anchors" << std::endl;
-    cout << "SparseDBG::fillAnchors time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
+    cout << "SparseDBG::fillAnchors time: " << t.get() << endl;
 }
 
 void SparseDBG::fillAnchors(size_t w, logging::Logger &logger, size_t threads,
                             const std::unordered_set<hashing::htype, hashing::alt_hasher<hashing::htype>> &to_add) {
-    clock_t t = clock();
+    logging::TimeSpace t;
     logger.trace() << "Adding anchors from long edges for alignment" << std::endl;
     ParallelRecordCollector<std::pair<const hashing::htype, EdgePosition>> res(threads);
     std::function<void(size_t, Edge &)> task = [&res, w, this, &to_add](size_t pos, Edge &edge) {
@@ -649,7 +649,7 @@ void SparseDBG::fillAnchors(size_t w, logging::Logger &logger, size_t threads,
         anchors.emplace(tmp);
     }
     logger.trace() << "Added " << anchors.size() << " anchors" << std::endl;
-    cout << "SparseDBG::fillAnchors time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
+    cout << "SparseDBG::fillAnchors time: " << t.get() << endl;
 }
 
 EdgePosition SparseDBG::getAnchor(const hashing::KWH &kwh) {
