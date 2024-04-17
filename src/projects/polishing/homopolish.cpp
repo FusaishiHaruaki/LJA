@@ -60,6 +60,7 @@ struct dinucleotide {
 //complex region positions sorted
 template <class Contig>
 vector<dinucleotide> GetDinucleotideRepeats(const Contig& compressed_contig) {
+    logging::TimeSpace t;
     size_t len = compressed_contig.size();
     size_t start = 0;
     vector<dinucleotide> res;
@@ -81,6 +82,7 @@ vector<dinucleotide> GetDinucleotideRepeats(const Contig& compressed_contig) {
         }
         start = start + 2 * multiplicity - 1;
     }
+    cout << "GetDinucleotideRepeats time: " << t.get() << endl;
     return res;
 }
 
@@ -110,6 +112,7 @@ struct ContigInfo {
     vector<vector<size_t>> dinucleotide_read_voting;
 */
     void FillComplex() {
+        logging::TimeSpace t;
         size_t current_id = 0;
         auto dinucleotide_coords = GetDinucleotideRepeats(sequence);
         size_t total_d = dinucleotide_coords.size();
@@ -128,6 +131,7 @@ struct ContigInfo {
             complex_strings[cur_start] = vector<string>();
             current_id = next_id;
         }
+        cout << "FillComplex time: " << t.get() << endl;
 
     }
 
@@ -166,6 +170,7 @@ struct ContigInfo {
     }
 
     string MSAConsensus(vector<string> &s, Logger & logger) {
+        logging::TimeSpace t;
 //Magic consts from spoa default settings
         auto alignment_engine = spoa::AlignmentEngine::Create(
 // -8 in default for third parameter(gap) opening, -6 for forth(gap extension)
@@ -219,11 +224,13 @@ struct ContigInfo {
         if (pref_remove > suf_remove) {
             return "";
         }
+        cout << "MSAConsensus time: " << t.get() << endl;
         return consensus.substr(pref_remove, suf_remove - pref_remove + 1);
 
     }
 
     string checkMSAConsensus(string s, vector<string> &all) {
+        logging::TimeSpace t;
         size_t cons_len = s.length();
 //consensus in last
         vector<size_t> all_len(all.size() - 1);
@@ -232,6 +239,7 @@ struct ContigInfo {
         }
         sort(all_len.begin(), all_len.end());
         s.erase(std::unique(s.begin(), s.end()), s.end());
+        cout << "checkMSAConsensus time: " << t.get() << endl;
         if (s.length() <= 2 * COMPLEX_EPS + 2) return "TOO SHORT";
         if (cons_len != all_len[all_len.size()/2]) {
             return "CONSENSUS LENGTH DIFFER FROM MEDIAN";
@@ -246,6 +254,7 @@ struct ContigInfo {
     }
 
     string GenerateConsensus(Logger & logger){
+        logging::TimeSpace t;
         std::stringstream ss;
         vector<int> quantities(256);
         std::ofstream debug;
@@ -316,6 +325,7 @@ struct ContigInfo {
         for (size_t i = 0; i < 20; i++) {
             logger.debug() << i << " " << quantities[i] << endl;
         }
+        cout << "GenerateConsensus time: " << t.get() << endl;
         return ss.str();
     }
 };
@@ -534,6 +544,7 @@ struct AssemblyInfo {
 
     void processReadPair (logging::Logger &logger, string& read, AlignmentInfo& aln) {
 //        logger.info() << read.id << endl;
+        logging::TimeSpace t;
         if (contigs.find(aln.contig_id) == contigs.end())
             return;
         Sequence uncompressed_read_seq (read);
@@ -648,18 +659,22 @@ struct AssemblyInfo {
         }
         if (matches < mismatches * 3)
             logger.debug()<< "Too many mismatches in a read " << aln.read_id << " matches/MM: " << matches << "/" << mismatches << endl;
+        cout << "processReadPair time: " << t.get() << endl;
     }
 
     void processBatch(logging::Logger &logger, vector<string>& batch, vector<AlignmentInfo>& alignments){
+        logging::TimeSpace t;
         size_t len = batch.size();
 #pragma omp parallel for default(none) shared(logger, len, batch, alignments)
         for (size_t i = 0; i < len; i++) {
             processReadPair(logger, batch[i], alignments[i]);
         }
+        cout << "processBatch time: " << t.get() << endl;
     }
 
     vector<Contig> process(logging::Logger &logger, const io::Library &lib,
                            const std::experimental::filesystem::path &alignmens_file) {
+        logging::TimeSpace t;
         std::ifstream compressed_reads;
         std::ofstream corrected_contigs;
         compressed_reads.open(alignmens_file);
@@ -734,6 +749,7 @@ struct AssemblyInfo {
             total_zero_covered += contig.second.zero_covered;
         }
         logger.info() << "Total zero covered nucleotides "  << total_zero_covered << endl;
+        cout << "vector<Contig> process time: " << t.get() << endl;
         return std::move(res);
     }
 };

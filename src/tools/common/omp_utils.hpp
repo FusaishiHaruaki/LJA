@@ -165,6 +165,7 @@ public:
 //keep track of total size of stored objects.
     template<class I>
     void processRecords(I begin, I end, size_t bucket_length = 1024 * 1024) {
+        logging::TimeSpace t;
         omp_set_num_threads(threads);
 #pragma omp parallel default(none)
         {
@@ -223,12 +224,14 @@ public:
         doInTheEnd();
         logger.trace() << "Finished parallel processing. Processed " << total <<
                " items with total length " << total_len << std::endl;
+        //cout << "processRecords atime: " << t.get() << endl;
     }
 
 
     //This method expects that iterators return references to objects instead of temporary objects.
     template<class I>
     void processObjects(I begin, I end, size_t bucket_size = 1024) {
+        logging::TimeSpace t;
         logger.trace() << "Starting parallel calculation" << std::endl;
         omp_set_num_threads(threads);
         ParallelProcessor<V> &self = *this;
@@ -270,6 +273,7 @@ public:
         }
         doInTheEnd();
         logger.trace() << "Finished parallel processing. Processed " << total << " items " << std::endl;
+        //cout << "processRecords atime: " << t.get() << endl;
     }
 
 };

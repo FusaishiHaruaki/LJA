@@ -11,7 +11,7 @@
 #include <limits>
 #include <string>
 #include <vector>
-
+#include "common/logging.hpp"
 
 static const std::size_t bits_per_char = 0x08;    // 8 bits in 1 char(unsigned)
 
@@ -288,12 +288,14 @@ public:
     }
 
     std::pair<size_t, size_t> count_bits() const {
+        logging::TimeSpace t;
         size_t res = 0;
         for(const unsigned char & c : bit_table_) {
             for(size_t i = 0; i < 8; i++) {
                 res += (c >> i) & 1u;
             }
         }
+        cout << "count_bits time: " << t.get() << endl;
         return {res, bit_table_.size() * 8};
     }
 
