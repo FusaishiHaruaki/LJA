@@ -23,7 +23,8 @@ size_t tournament(const Sequence &bulge, const std::vector<Sequence> &candidates
                 return -1;
         }
     }
-    cout << "tournament time: " << t.get() << endl;
+    //cout << "tournament time: " << t.get() << endl;
+    cout << "tournament(const Sequence &" << bulge << ", const std::vector<Sequence> &" << candidates << ", bool " << dump << ") time: " << t.get() << endl;
     return winner;
 }
 
@@ -53,7 +54,8 @@ std::vector<Path> FindBulgeAlternatives(const Path &path, size_t max_diff) {
             }
         }
     }
-    cout << "FindBulgeAlternatives time: " << t.get() << endl;
+    //cout << "FindBulgeAlternatives time: " << t.get() << endl;
+    cout << "FindBulgeAlternatives(const Path & path, size_t " << max_diff << ") time: " << t.get() << endl;
     return res;
 }
 
@@ -82,7 +84,9 @@ FilterAlternatives(logging::Logger &logger1, const GraphAlignment &initial, cons
         }
         res.emplace_back(al);
     }
-    cout << "FilterAlternatives time: " << t.get() << endl;
+    //cout << "FilterAlternatives time: " << t.get() << endl;
+    cout << "FilterAlternatives(logging::Logger &logger1, const GraphAlignment &" << initial.start().hash() << ", const std::vector<GraphAlignment> &" << als.size() << ", "
+                   << "size_t " << max_diff << ", double " << threshold << ") time: " << t.get() << endl;
     return res;
 }
 
@@ -171,12 +175,20 @@ GraphAlignment chooseBulgeCandidate(logging::Logger &logger, std::ostream &out, 
             message += "m";
         else
             message += "s";
+    	cout << "chooseBulgeCandidate(logging::Logger &logger, std::ostream &out, const GraphAlignment &" << bulge.start().hash() << ", "
+                                    << "const RecordStorage &reads_storage, const RecordStorage &ref_storage, "
+                                    << "double " << threshold << ", std::vector<GraphAlignment> &" << read_alternatives.size() << ", string &" << message << ", "
+                                    << "bool " << dump << ") time: " << t.get() << endl;
         return std::move(read_alternatives_filtered[0]);
     } else {
         message = "";
+    	//cout << "chooseBulgeCandidate time: " << t.get() << endl;
+    	cout << "chooseBulgeCandidate(logging::Logger &logger, std::ostream &out, const GraphAlignment &" << bulge.start().hash() << ", "
+                                    << "const RecordStorage &reads_storage, const RecordStorage &ref_storage, "
+                                    << "double " << threshold << ", std::vector<GraphAlignment> &" << read_alternatives.size() << ", string &" << message << ", "
+                                    << "bool " << dump << ") time: " << t.get() << endl;
         return bulge;
     }
-    cout << "chooseBulgeCandidate time: " << t.get() << endl;
 }
 
 std::pair<GraphAlignment, size_t> BestAlignmentPrefix(const GraphAlignment &al, const Sequence &seq) {
@@ -187,7 +199,8 @@ std::pair<GraphAlignment, size_t> BestAlignmentPrefix(const GraphAlignment &al, 
     Sequence prefix = candSeq.Subseq(0, len);
     GraphAlignment res(al.start());
     res.extend(prefix);
-    cout << "BestAlignmentPrefix time: " << t.get() << endl;
+    //cout << "BestAlignmentPrefix time: " << t.get() << endl;
+    cout << "BestAlignmentPrefix(const GraphAlignment &" << al.start().hash() << ", const Sequence &" << seq << ") time: " << t.get() << endl;
     return {res, bp.second};
 }
 
@@ -265,7 +278,10 @@ GraphAlignment processTip(logging::Logger &logger, std::ostream &out, const Grap
     out << " " << trunc_alignments.size() << " " << filtered_genome_support;
     out << " " << (trunc_alignments.size() == 1 ? "+" : "-");
     out << "\n";
-    cout << "processTip time: " << t.get() << endl;
+    //cout << "processTip time: " << t.get() << endl;
+    cout << "processTip(logging::Logger &logger, std::ostream &out, const GraphAlignment &" << tip.start().hash() << ", "
+                          << "const std::vector<GraphAlignment> &" << alternatives.size() << ", const RecordStorage &ref_storage, "
+                          << "double " << threshold << ", string &" << message << ", bool " << dump << ") time: " << t.get() << endl;
     if(trunc_alignments.size() == 1) {
         return std::move(trunc_alignments[0]);
     } else {
@@ -460,7 +476,9 @@ size_t correctLowCoveredRegions(logging::Logger &logger, SparseDBG &sdbg, Record
     }
     out.close();
     logger.info() << "Corrected low covered regions in " << res << " reads" << std::endl;
-    cout << "correctLowCoveredRegions time: " << t.get() << endl;
+    cout << "correctLowCoveredRegions(logging::Logger &logger, SparseDBG &" << sdbg.size() << ", RecordStorage &reads_storage, "
+                                << "RecordStorage &ref_storage, const std::experimental::filesystem::path &" << out_file << ", "
+                                << "double " << threshold << ", double " << reliable_threshold << ", size_t " << k << ", size_t " << threads << ", bool " << dump << ") time: " << t.get() << endl;
     return res;
 }
 
@@ -471,15 +489,18 @@ GraphAlignment findAlternative(logging::Logger &logger, std::ostream &out, const
     std::vector<GraphAlignment> read_alternatives_filtered = FilterAlternatives(logger, bulge, read_alternatives,
                                                                                 std::max<size_t>(100, bulge.len() / 100), 1);
     if(read_alternatives_filtered.size() != 2)
-        cout << "findAlternative time: " << t.get() << endl;
+        cout << "findAlternative(logging::Logger &logger, std::ostream &out, const GraphAlignment &" << bulge.start().hash() << ", "
+                               << "const RecordStorage &reads_storage) time: " << t.get() << endl;
         return bulge;
     for(GraphAlignment &al : read_alternatives_filtered) {
         if(al == bulge)
             continue;
-        cout << "findAlternative time: " << t.get() << endl;
+        cout << "findAlternative(logging::Logger &logger, std::ostream &out, const GraphAlignment &" << bulge.start().hash() << ", "
+                               << "const RecordStorage &reads_storage) time: " << t.get() << endl;
         return std::move(al);
     }
-    cout << "findAlternative time: " << t.get() << endl;
+    cout << "findAlternative(logging::Logger &logger, std::ostream &out, const GraphAlignment &" << bulge.start().hash() << ", "
+		       << "const RecordStorage &reads_storage) time: " << t.get() << endl;
     return bulge;
 }
 
@@ -555,7 +576,8 @@ size_t collapseBulges(logging::Logger &logger, RecordStorage &reads_storage, Rec
     size_t corruption = std::unordered_set<Edge*>(corruption_cnt.begin(), bulge_cnt.end()).size();
 //    logger << "Bulge collapsing results " << bulges << " " << collapsable << " " << genome << " " << corruption << std::endl;
     logger.info() << "Collapsed bulges in " << bulges << " reads" << std::endl;
-    cout << "collapseBulges time: " << t.get() << endl;
+    cout << "collapseBulges(logging::Logger &logger, RecordStorage &reads_storage, RecordStorage &ref_storage, "
+                       << "const std::experimental::filesystem::path &" << out_file << ", double " << threshold << ", size_t " << k << ", size_t " << threads << ") time: " << t.get() << endl;
     return bulges;
 }
 
@@ -577,7 +599,9 @@ void initialCorrect(SparseDBG &sdbg, logging::Logger &logger, const std::experim
     TipCorrectionPipeline(logger, sdbg, reads_storage, threads, reliable_coverage);
     collapseBulges(logger, reads_storage, ref_storage, out_file, bulge_threshold, k, threads);
     RemoveUncovered(logger, threads, sdbg, {&reads_storage, &ref_storage});
-    cout << "initialCorrect time: " << t.get() << endl;
+    cout << "initialCorrect(SparseDBG &" << sdbg.size() << ", logging::Logger &logger, const std::experimental::filesystem::path &" << out_file << ", "
+                    << "RecordStorage &reads_storage, RecordStorage &ref_storage, double " << threshold << ", double " << bulge_threshold << ", "
+                    << "double " << reliable_coverage << ", size_t " << threads << ", bool " << dump << ") time: " << t.get() << endl;
 }
 
 size_t correctAT(logging::Logger &logger, RecordStorage &reads_storage, size_t k, size_t threads) {
@@ -596,7 +620,7 @@ size_t correctAT(logging::Logger &logger, RecordStorage &reads_storage, size_t k
         for (size_t path_pos = 0; path_pos < path.size(); path_pos++) {
             if(path[path_pos].left > 0 || path[path_pos].right < path[path_pos].contig().size())
                 continue;
-//            std::cout << alignedRead.id << " " << path_pos << " " << path.size() << std::endl;
+            std::cout << "within path_pos for loop, read id:" << alignedRead.id << " index/path_pos: " << path_pos << " path size: " << path.size() << std::endl;
             Sequence seq = path.getVertex(path_pos).seq;
             size_t at_cnt1 = 2;
             while (at_cnt1 < seq.size() && seq[seq.size() - at_cnt1 - 1] == seq[seq.size() - at_cnt1 + 1])
@@ -635,6 +659,7 @@ size_t correctAT(logging::Logger &logger, RecordStorage &reads_storage, size_t k
             for (size_t skip = 0; skip <= std::min(4 * max_variation, 2 * max_variation + at_cnt2); skip+=step) {
 //                size_t skip = i * 2;
                 Sequence candidate_seq = longest_candidate.Subseq(skip, skip + k);
+		cout << "within for loop, index/skip: " << skip << " candidate_seq: " << candidate_seq << endl;
                 GraphAlignment candidate(path.getVertex(path_pos));
                 candidate.extend(candidate_seq);
                 if (!candidate.valid())
@@ -686,6 +711,6 @@ size_t correctAT(logging::Logger &logger, RecordStorage &reads_storage, size_t k
     }
     reads_storage.applyCorrections(logger, threads);
     logger.info() << "Corrected " << cnt.get() << " dinucleotide sequences" << std::endl;
-    cout << "correctAT time: " << t.get() << endl;
+    cout << "correctAT(logging::Logger &logger, RecordStorage &reads_storage, size_t " << k << ", size_t " << threads << ") time: " << t.get() << endl;
     return cnt.get();
 }

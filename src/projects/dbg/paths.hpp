@@ -97,6 +97,7 @@ namespace dbg {
         GraphAlignment operator+(const Path &other) const;
         GraphAlignment operator+(const Segment<Edge> &other) const;
         GraphAlignment operator+(Edge &other) const;
+	// idk friend std::ostream& operator<<(std::ostream  &os, const GraphAlignment &aln) {return os << aln.str();}
         //TODO deprecate
         Sequence map(std::unordered_map<const Edge *, Sequence> &edge_map);
 

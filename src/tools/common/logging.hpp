@@ -148,6 +148,8 @@ namespace logging {
             return 0;
         }
 
+	// idk friend inline std::ostream& operator<<(std::ostream  &os, const Logger &logger) {return os << "logger";}
+
         void forceFlush() {
             if(curlevel <= LogLevel::info)
                 std::cout.flush();
