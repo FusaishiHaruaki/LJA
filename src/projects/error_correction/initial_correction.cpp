@@ -620,7 +620,7 @@ size_t correctAT(logging::Logger &logger, RecordStorage &reads_storage, size_t k
         for (size_t path_pos = 0; path_pos < path.size(); path_pos++) {
             if(path[path_pos].left > 0 || path[path_pos].right < path[path_pos].contig().size())
                 continue;
-            std::cout << "within path_pos for loop, read id:" << alignedRead.id << " index/path_pos: " << path_pos << " path size: " << path.size() << std::endl;
+            std::cout << "within correctAT path_pos for loop, read id:" << alignedRead.id << " index/path_pos: " << path_pos << " path size: " << path.size() << std::endl;
             Sequence seq = path.getVertex(path_pos).seq;
             size_t at_cnt1 = 2;
             while (at_cnt1 < seq.size() && seq[seq.size() - at_cnt1 - 1] == seq[seq.size() - at_cnt1 + 1])
@@ -659,7 +659,7 @@ size_t correctAT(logging::Logger &logger, RecordStorage &reads_storage, size_t k
             for (size_t skip = 0; skip <= std::min(4 * max_variation, 2 * max_variation + at_cnt2); skip+=step) {
 //                size_t skip = i * 2;
                 Sequence candidate_seq = longest_candidate.Subseq(skip, skip + k);
-		cout << "within for loop, index/skip: " << skip << " candidate_seq: " << candidate_seq << endl;
+		cout << "within correctAT candidate for loop, index/skip: " << skip << " candidate_seq: " << candidate_seq << endl;
                 GraphAlignment candidate(path.getVertex(path_pos));
                 candidate.extend(candidate_seq);
                 if (!candidate.valid())

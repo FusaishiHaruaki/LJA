@@ -80,7 +80,8 @@ findJunctions(logging::Logger &logger, const std::vector<Sequence> &disjointigs,
     __gnu_parallel::sort(res.begin(), res.end());
     res.erase(std::unique(res.begin(), res.end()), res.end());
     logger.info() << "Collected " << res.size() << " junctions." << std::endl;
-    cout << "findJunctions time: " << t.get() << endl;
+    cout << "findJunctions(logging::Logger &logger, const std::vector<Sequence> &" << disjointigs.size() << ", const hashing::RollingHash &" << hasher.getK() << ", "
+              << "size_t " << threads << ") time: " << t.get() << endl;
     return res;
 }
 
@@ -123,7 +124,8 @@ SparseDBG constructDBG(logging::Logger &logger, const std::vector<hashing::htype
     logger.info() << "Ended merging edges. Resulting size " << dbg.size() << std::endl;
     logger.trace() << "Statistics for de Bruijn graph:" << std::endl;
     printStats(logger, dbg);
-    cout << "constructDBG time: " << t.get() << endl;
+    cout << "constructDBG(logging::Logger &logger, const std::vector<hashing::htype> &" << vertices.size() << ", const std::vector<Sequence> &" << disjointigs.size() << ", "
+             << "const RollingHash &" << hasher.getK() << ", size_t " << threads << ") time: " << t.get() << endl;
     return std::move(dbg);
 }
 
@@ -202,6 +204,8 @@ SparseDBG DBGPipeline(logging::Logger &logger, const RollingHash &hasher, size_t
         vertices = readHashs(is);
         is.close();
     }
-    cout << "without construction, DBGPipeline time: " << t.get() << endl;
+    cout << "without construction, DBGPipeline(logging::Logger &logger, const RollingHash &" << hasher.getK() << ", size_t " << w << ", const io::Library &lib, "
+                      << "const std::experimental::filesystem::path &" << dir << ", size_t " << threads << ", const string &" << disjointigs_file << ", "
+                      << "const string &" << vertices_file << ") time: " << t.get() << endl;
     return std::move(constructDBG(logger, vertices, disjointigs, hasher, threads));
 }
