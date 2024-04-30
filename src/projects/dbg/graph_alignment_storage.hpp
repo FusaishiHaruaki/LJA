@@ -235,7 +235,7 @@ void RecordStorage::fill(I begin, I end, dbg::SparseDBG &dbg, size_t min_read_si
         VERIFY(std::get<0>(rec) < reads.size());
         reads[std::get<0>(rec)] = AlignedRead(std::get<1>(rec), std::move(std::get<2>(rec)));
     }
-    cout << "RecordStorage::fill time: " << t.get() << endl;
+    cout << "RecordStorage::fill(I begin, I end, dbg::SparseDBG &"<< dbg.size() << ", size_t "<< min_read_size << ", logging::Logger &logger, size_t " << threads <<") time: " << t.get() << endl;
     logger.info() << "Alignment collection finished. Total length of alignments is " << cnt.get() << std::endl;
 }
 

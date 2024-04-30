@@ -1,5 +1,6 @@
 #include "dbg_disjointigs.hpp"
 #include "graph_stats.hpp"
+#include "common/logging.hpp"
 
 using namespace hashing;
 using namespace dbg;
@@ -68,6 +69,7 @@ void prepareVertex(Vertex &vertex) {
 
 void extractLinearDisjointigs(SparseDBG &sdbg, ParallelRecordCollector<Sequence> &res, logging::Logger &logger,
                               size_t threads) {
+    logging::TimeSpace t;
 //    TODO support sorted edge list at all times since we compare them during construction anyway
     std::function<void(size_t, std::pair<const htype, Vertex> &)> prepare_task =
             [&sdbg, &res](size_t pos, std::pair<const htype, Vertex> & pair) {
@@ -99,10 +101,12 @@ void extractLinearDisjointigs(SparseDBG &sdbg, ParallelRecordCollector<Sequence>
                 }
             };
     processObjects(sdbg.begin(), sdbg.end(), logger, threads, task);
+    cout << "extractLinearDisjointigs(SparseDBG &" << sdbg.size() << ", ParallelRecordCollector<Sequence> &" << res.size() << ", logging::Logger &logger, size_t " << threads << ") time: " << t.get() << endl;
 }
 
 void extractCircularDisjointigs(SparseDBG &sdbg, ParallelRecordCollector<Sequence> &res, logging::Logger &logger,
                                 size_t threads) {
+    logging::TimeSpace t;
     std::function<void(size_t, std::pair<const htype, Vertex> &)> task =
             [&sdbg, &res](size_t pos, std::pair<const htype, Vertex> & pair) {
                 Vertex &rec = pair.second;
@@ -129,6 +133,7 @@ void extractCircularDisjointigs(SparseDBG &sdbg, ParallelRecordCollector<Sequenc
                 res.add(tmp + disjointig + disjointig);
             };
     processObjects(sdbg.begin(), sdbg.end(), logger, threads, task);
+    cout << "extractCircularDisjointigs(SparseDBG &" << sdbg.size() << ", ParallelRecordCollector<Sequence> &" << res.size() << ", logging::Logger &logger, size_t " << threads << ") time: " << t.get() << endl;
 }
 
 std::vector<Sequence> extractDisjointigs(logging::Logger &logger, SparseDBG &sdbg, size_t threads) {
@@ -150,6 +155,7 @@ std::vector<Sequence> extractDisjointigs(logging::Logger &logger, SparseDBG &sdb
 
 std::vector<Sequence> constructDisjointigs(const RollingHash &hasher, size_t w, const io::Library &reads_file,
                                            const std::vector<htype> &hash_list, size_t threads, logging::Logger &logger) {
+    logging::TimeSpace t;
     std::vector<Sequence> disjointigs;
     SparseDBG sdbg = constructSparseDBGFromReads(logger, reads_file, threads, hasher, hash_list, w);
 //    sdbg.printStats(logger);
@@ -164,5 +170,6 @@ std::vector<Sequence> constructDisjointigs(const RollingHash &hasher, size_t w, 
 //    os.close();
 
     disjointigs = extractDisjointigs(logger, sdbg, threads);
+    cout << "constructDisjointigs(const RollingHash &hasher, size_t " << w << ", const io::Library &reads_file, const std::vector<htype> &" << hash_list <<", size_t " << threads << ", logging::Logger &logger) time: " << t.get() << endl;
     return disjointigs;
 }
