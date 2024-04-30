@@ -341,7 +341,7 @@ namespace dbg {
         }
         os.close();
         logger.info() << "Finished read alignment. Results are in " << (dir / "alignments.txt") << std::endl;
-        cout << "alignLib(logging::Logger &logger, SparseDBG &" << dbg << ", const io::Library &align_lib, const RollingHash &hasher, "
+        cout << "alignLib(logging::Logger &logger, SparseDBG &" << dbg.size() << ", const io::Library &align_lib, const RollingHash &hasher, "
              << "const size_t " << w << ", const std::experimental::filesystem::path &" << dir << ", size_t " << threads << ") time: " << t.get() << endl;
         return alignments_file;
     }
