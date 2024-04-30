@@ -29,7 +29,7 @@ size_t tournament(const Sequence &bulge, const std::vector<Sequence> &candidates
 }
 
 std::vector<Path> FindBulgeAlternatives(const Path &path, size_t max_diff) {
-    logging::TimeSpace t;
+    // logging::TimeSpace t;
     size_t k = path.start().seq.size();
     std::vector<GraphAlignment> als = GraphAlignment(path.start()).allExtensions(max_diff);
     max_diff = std::min(max_diff, path.len());
@@ -55,14 +55,14 @@ std::vector<Path> FindBulgeAlternatives(const Path &path, size_t max_diff) {
         }
     }
     //cout << "FindBulgeAlternatives time: " << t.get() << endl;
-    cout << "FindBulgeAlternatives(const Path & path, size_t " << max_diff << ") time: " << t.get() << endl;
+    // cout << "FindBulgeAlternatives(const Path & path, size_t " << max_diff << ") time: " << t.get() << endl;
     return res;
 }
 
 std::vector<GraphAlignment>
 FilterAlternatives(logging::Logger &logger1, const GraphAlignment &initial, const std::vector<GraphAlignment> &als,
                    size_t max_diff, double threshold) {
-    logging::TimeSpace t;
+    // logging::TimeSpace t;
     size_t len = initial.len();
     std::vector<GraphAlignment> res;
     size_t k = initial.getVertex(0).seq.size();
@@ -85,8 +85,10 @@ FilterAlternatives(logging::Logger &logger1, const GraphAlignment &initial, cons
         res.emplace_back(al);
     }
     //cout << "FilterAlternatives time: " << t.get() << endl;
+    /*
     cout << "FilterAlternatives(logging::Logger &logger1, const GraphAlignment &" << initial.start().hash() << ", const std::vector<GraphAlignment> &" << als.size() << ", "
                    << "size_t " << max_diff << ", double " << threshold << ") time: " << t.get() << endl;
+                   */
     return res;
 }
 
@@ -183,16 +185,18 @@ GraphAlignment chooseBulgeCandidate(logging::Logger &logger, std::ostream &out, 
     } else {
         message = "";
     	//cout << "chooseBulgeCandidate time: " << t.get() << endl;
+        /*
     	cout << "chooseBulgeCandidate(logging::Logger &logger, std::ostream &out, const GraphAlignment &" << bulge.start().hash() << ", "
                                     << "const RecordStorage &reads_storage, const RecordStorage &ref_storage, "
                                     << "double " << threshold << ", std::vector<GraphAlignment> &" << read_alternatives.size() << ", string &" << message << ", "
                                     << "bool " << dump << ") time: " << t.get() << endl;
+                                    */
         return bulge;
     }
 }
 
 std::pair<GraphAlignment, size_t> BestAlignmentPrefix(const GraphAlignment &al, const Sequence &seq) {
-    logging::TimeSpace t;
+    // logging::TimeSpace t;
     Sequence candSeq = al.truncSeq();
     std::pair<size_t, size_t> bp = bestPrefix(seq, candSeq);
     size_t len = bp.first;
@@ -200,14 +204,14 @@ std::pair<GraphAlignment, size_t> BestAlignmentPrefix(const GraphAlignment &al, 
     GraphAlignment res(al.start());
     res.extend(prefix);
     //cout << "BestAlignmentPrefix time: " << t.get() << endl;
-    cout << "BestAlignmentPrefix(const GraphAlignment &" << al.start().hash() << ", const Sequence &" << seq.size() << ") time: " << t.get() << endl;
+    // cout << "BestAlignmentPrefix(const GraphAlignment &" << al.start().hash() << ", const Sequence &" << seq.size() << ") time: " << t.get() << endl;
     return {res, bp.second};
 }
 
 GraphAlignment processTip(logging::Logger &logger, std::ostream &out, const GraphAlignment &tip,
                           const std::vector<GraphAlignment> &alternatives, const RecordStorage &ref_storage,
                           double threshold, string &message, bool dump) {
-    logging::TimeSpace t;
+    // logging::TimeSpace t;
     size_t size = tip.len();
     out << size << " tip " << tip.size() << " " << tip.minCoverage();
     if(dump) {
@@ -279,9 +283,11 @@ GraphAlignment processTip(logging::Logger &logger, std::ostream &out, const Grap
     out << " " << (trunc_alignments.size() == 1 ? "+" : "-");
     out << "\n";
     //cout << "processTip time: " << t.get() << endl;
+    /*
     cout << "processTip(logging::Logger &logger, std::ostream &out, const GraphAlignment &" << tip.start().hash() << ", "
                           << "const std::vector<GraphAlignment> &" << alternatives.size() << ", const RecordStorage &ref_storage, "
                           << "double " << threshold << ", string &" << message << ", bool " << dump << ") time: " << t.get() << endl;
+    */
     if(trunc_alignments.size() == 1) {
         return std::move(trunc_alignments[0]);
     } else {
