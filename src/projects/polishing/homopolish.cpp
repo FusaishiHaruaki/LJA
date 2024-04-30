@@ -544,7 +544,7 @@ struct AssemblyInfo {
 
     void processReadPair (logging::Logger &logger, string& read, AlignmentInfo& aln) {
 //        logger.info() << read.id << endl;
-        logging::TimeSpace t;
+        //logging::TimeSpace t;
         if (contigs.find(aln.contig_id) == contigs.end())
             return;
         Sequence uncompressed_read_seq (read);
@@ -659,7 +659,7 @@ struct AssemblyInfo {
         }
         if (matches < mismatches * 3)
             logger.debug()<< "Too many mismatches in a read " << aln.read_id << " matches/MM: " << matches << "/" << mismatches << endl;
-        cout << "processReadPair time: " << t.get() << endl;
+        //cout << "processReadPair time: " << t.get() << endl;
     }
 
     void processBatch(logging::Logger &logger, vector<string>& batch, vector<AlignmentInfo>& alignments){

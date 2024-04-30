@@ -80,16 +80,16 @@ bool VertexRecord::isDisconnected(const Edge &edge) const {
 
 size_t VertexRecord::countStartsWith(const Sequence &seq) const {
 //        lock();
-    logging::TimeSpace t;
+    //logging::TimeSpace t;
     size_t cnt = 0;
     for(const std::pair<Sequence, size_t> &rec : paths) {
-	std::cout << "within countStartsWith loop, Sequence: " << rec.first << " size_t: " << rec.second << std::endl;
+	//std::cout << "within countStartsWith loop, Sequence: " << rec.first << " size_t: " << rec.second << std::endl;
         if(rec.first.startsWith(seq)) {
             cnt += rec.second;
         }
     }
 //        unlock();
-    std::cout << "VertexRecord::countStartsWith(const Sequence &" << seq << ") time: " << t.get() << std::endl;
+    //std::cout << "VertexRecord::countStartsWith(const Sequence &" << seq << ") time: " << t.get() << std::endl;
     return cnt;
 }
 
