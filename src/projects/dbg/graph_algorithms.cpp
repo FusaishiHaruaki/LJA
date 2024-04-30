@@ -262,7 +262,7 @@ namespace dbg {
             mergeLoop(path);
         }
         logger.trace() << "Finished merging cyclic paths" << std::endl;
-        cout << "mergeCyclicPaths(logging::Logger &logger, SparseDBG &" << sdbg << ", size_t " << threads << ") atime: " << t.get() << endl;
+        cout << "mergeCyclicPaths(logging::Logger &logger, SparseDBG &" << sdbg.size() << ", size_t " << threads << ") atime: " << t.get() << endl;
     }
 
     void mergeAll(logging::Logger &logger, SparseDBG &sdbg, size_t threads) {
@@ -341,8 +341,8 @@ namespace dbg {
         }
         os.close();
         logger.info() << "Finished read alignment. Results are in " << (dir / "alignments.txt") << std::endl;
-        cout << "alignLib(logging::Logger &logger, SparseDBG &" << dbg << ", const io::Library &align_lib, const RollingHash &hasher,
-             const size_t " << w << ", const std::experimental::filesystem::path &" << dir << ", size_t " << threads << ") time: " << t.get() << endl;
+        cout << "alignLib(logging::Logger &logger, SparseDBG &" << dbg << ", const io::Library &align_lib, const RollingHash &hasher, "
+             << "const size_t " << w << ", const std::experimental::filesystem::path &" << dir << ", size_t " << threads << ") time: " << t.get() << endl;
         return alignments_file;
     }
 
