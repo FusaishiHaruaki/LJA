@@ -30,8 +30,8 @@ namespace dbg {
             lens_distr[std::min(l, lens_distr.size() - 1)] += 1;
         }
 
-        cout << "fillCoverage(SparseDBG &" << sdbg.size() << ", logging::Logger &logger, Iterator begin, Iterator end, size_t " << threads << ",
-                      const RollingHash &hasher, const size_t " << min_read_size << ") time: " << t.get() << endl;
+        cout << "fillCoverage(SparseDBG &" << sdbg.size() << ", logging::Logger &logger, Iterator begin, Iterator end, size_t " << threads << ", "
+                      << "const RollingHash &hasher, const size_t " << min_read_size << ") time: " << t.get() << endl;
     }
 
     SparseDBG constructSparseDBGFromReads(logging::Logger &logger, const io::Library &reads_file, size_t threads,
