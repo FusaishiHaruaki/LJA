@@ -1,11 +1,14 @@
 #pragma once
 #include "paths.hpp"
 #include "sparse_dbg.hpp"
+#include "common/logging.hpp"
+
 namespace dbg {
 
     template<class Iterator>
     void FillSparseDBGEdges(SparseDBG &sdbg, Iterator begin, Iterator end, logging::Logger &logger, size_t threads,
                             const size_t min_read_size) {
+        logging::TimeSpace t;
         typedef typename Iterator::value_type ContigType;
         logger.trace() << "Starting to fill edges" << std::endl;
         std::function<void(size_t, ContigType &)> task = [&sdbg, min_read_size](size_t pos, ContigType &contig) {
@@ -15,10 +18,13 @@ namespace dbg {
         };
         processRecords(begin, end, logger, threads, task);
         logger.trace() << "Sparse graph edges filled." << std::endl;
+        std::cout << "FillSparseDBGEdges(SparseDBG &" << sdbg.size() << ", Iterator begin, Iterator end, logging::Logger &logger, size_t " << threads << ", "
+                            << "const size_t " << min_read_size << ") time: " << t.get() << std::endl;
     }
 
     template<class Iterator>
     void RefillSparseDBGEdges(SparseDBG &sdbg, Iterator begin, Iterator end, logging::Logger &logger, size_t threads) {
+        logging::TimeSpace t;
         logger.trace() << "Starting to fill edges" << std::endl;
         std::function<void(size_t, std::pair<Vertex *, Sequence> &)> task = [&sdbg](size_t pos,
                                                                                     std::pair<Vertex *, Sequence> &contig) {
@@ -26,6 +32,7 @@ namespace dbg {
         };
         processObjects(begin, end, logger, threads, task);
         logger.trace() << "Sparse graph edges filled." << std::endl;
+        std::cout << "FillSparseDBGEdges(SparseDBG &" << sdbg.size() << ", Iterator begin, Iterator end, logging::Logger &logger, size_t " << threads << ") time: " << t.get() << std::endl;
     }
 
     SparseDBG

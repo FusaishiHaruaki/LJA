@@ -177,10 +177,12 @@ GraphAlignment chooseBulgeCandidate(logging::Logger &logger, std::ostream &out, 
             message += "m";
         else
             message += "s";
+        /*
     	cout << "chooseBulgeCandidate(logging::Logger &logger, std::ostream &out, const GraphAlignment &" << bulge.start().hash() << ", "
                                     << "const RecordStorage &reads_storage, const RecordStorage &ref_storage, "
                                     << "double " << threshold << ", std::vector<GraphAlignment> &" << read_alternatives.size() << ", string &" << message << ", "
                                     << "bool " << dump << ") time: " << t.get() << endl;
+                                    */
         return std::move(read_alternatives_filtered[0]);
     } else {
         message = "";
@@ -482,8 +484,8 @@ size_t correctLowCoveredRegions(logging::Logger &logger, SparseDBG &sdbg, Record
     }
     out.close();
     logger.info() << "Corrected low covered regions in " << res << " reads" << std::endl;
-    cout << "correctLowCoveredRegions(logging::Logger &logger, SparseDBG &" << sdbg.size() << ", RecordStorage &reads_storage, "
-                                << "RecordStorage &ref_storage, const std::experimental::filesystem::path &" << out_file << ", "
+    cout << "correctLowCoveredRegions(logging::Logger &logger, SparseDBG &" << sdbg.size() << ", RecordStorage &" << reads_storage.size() << ", "
+                                << "RecordStorage &" << ref_storage.size() << ", const std::experimental::filesystem::path &" << out_file << ", "
                                 << "double " << threshold << ", double " << reliable_threshold << ", size_t " << k << ", size_t " << threads << ", bool " << dump << ") time: " << t.get() << endl;
     return res;
 }
@@ -496,17 +498,17 @@ GraphAlignment findAlternative(logging::Logger &logger, std::ostream &out, const
                                                                                 std::max<size_t>(100, bulge.len() / 100), 1);
     if(read_alternatives_filtered.size() != 2)
         cout << "findAlternative(logging::Logger &logger, std::ostream &out, const GraphAlignment &" << bulge.start().hash() << ", "
-                               << "const RecordStorage &reads_storage) time: " << t.get() << endl;
+                               << "const RecordStorage &" << reads_storage.size() << ") time: " << t.get() << endl;
         return bulge;
     for(GraphAlignment &al : read_alternatives_filtered) {
         if(al == bulge)
             continue;
         cout << "findAlternative(logging::Logger &logger, std::ostream &out, const GraphAlignment &" << bulge.start().hash() << ", "
-                               << "const RecordStorage &reads_storage) time: " << t.get() << endl;
+                               << "const RecordStorage &" << reads_storage.size() << ") time: " << t.get() << endl;
         return std::move(al);
     }
     cout << "findAlternative(logging::Logger &logger, std::ostream &out, const GraphAlignment &" << bulge.start().hash() << ", "
-		       << "const RecordStorage &reads_storage) time: " << t.get() << endl;
+		       << "const RecordStorage &" << reads_storage.size() << ") time: " << t.get() << endl;
     return bulge;
 }
 
@@ -582,7 +584,7 @@ size_t collapseBulges(logging::Logger &logger, RecordStorage &reads_storage, Rec
     size_t corruption = std::unordered_set<Edge*>(corruption_cnt.begin(), bulge_cnt.end()).size();
 //    logger << "Bulge collapsing results " << bulges << " " << collapsable << " " << genome << " " << corruption << std::endl;
     logger.info() << "Collapsed bulges in " << bulges << " reads" << std::endl;
-    cout << "collapseBulges(logging::Logger &logger, RecordStorage &reads_storage, RecordStorage &ref_storage, "
+    cout << "collapseBulges(logging::Logger &logger, RecordStorage &reads_storage, RecordStorage &" << ref_storage.size() << ", "
                        << "const std::experimental::filesystem::path &" << out_file << ", double " << threshold << ", size_t " << k << ", size_t " << threads << ") time: " << t.get() << endl;
     return bulges;
 }
@@ -606,7 +608,7 @@ void initialCorrect(SparseDBG &sdbg, logging::Logger &logger, const std::experim
     collapseBulges(logger, reads_storage, ref_storage, out_file, bulge_threshold, k, threads);
     RemoveUncovered(logger, threads, sdbg, {&reads_storage, &ref_storage});
     cout << "initialCorrect(SparseDBG &" << sdbg.size() << ", logging::Logger &logger, const std::experimental::filesystem::path &" << out_file << ", "
-                    << "RecordStorage &reads_storage, RecordStorage &ref_storage, double " << threshold << ", double " << bulge_threshold << ", "
+                    << "RecordStorage &" << reads_storage.size() << ", RecordStorage &" << ref_storage.size() << ", double " << threshold << ", double " << bulge_threshold << ", "
                     << "double " << reliable_coverage << ", size_t " << threads << ", bool " << dump << ") time: " << t.get() << endl;
 }
 

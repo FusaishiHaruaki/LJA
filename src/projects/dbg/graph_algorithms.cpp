@@ -44,7 +44,9 @@ namespace dbg {
         FillSparseDBGEdges(sdbg, reader.begin(), reader.end(), logger, threads, w + hasher.getK() - 1);
         logger.info() << "Finished sparse de Bruijn graph construction." << std::endl;
 
-        cout << "constructSparseDBGFromReads time: " << t.get() << endl;
+        cout << "constructSparseDBGFromReads(logging::Logger &logger, const io::Library &reads_file, size_t " << threads << ", "
+                                          << "const RollingHash &hasher, const std::vector<htype> &" << hash_list.size() << ", "
+                                          << "const size_t "<< w <<") time: " << t.get() << endl;
         return std::move(sdbg);
     }
 
@@ -86,7 +88,7 @@ namespace dbg {
         logger.info() << "Filling graph with new edges." << std::endl;
         FillSparseDBGEdges(sdbg, new_edges.begin(), new_edges.end(), logger, threads, sdbg.hasher().getK() + 1);
         logger.info() << "Finished fixing sparse de Bruijn graph." << std::endl;
-        cout << "tieTips time: " << t.get() << endl;
+        cout << "tieTips(logging::Logger &logger, SparseDBG &" << sdbg.size() << ", size_t " << w << ", "<< "size_t " << threads << ") time: " << t.get() << endl;
     }
 
     void UpdateVertexTips(Vertex &rec, ParallelRecordCollector<Vertex *> &queue) {

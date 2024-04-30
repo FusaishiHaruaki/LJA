@@ -37,6 +37,7 @@ constructMinimizers(logging::Logger &logger, const io::Library &reads_file, size
     if (hash_list.size() == 0) {
         logger.info() << "WARNING: no reads passed the length filter " << min_read_size << "." << std::endl;
     }
-    cout << "constructMinimizers time: " << t.get() << endl;
+    cout << "constructMinimizers(logging::Logger &logger, const io::Library &reads_file, " << "size_t " << threads << ", const RollingHash &hasher, "
+                    << "const size_t " << w << ") time: " << t.get() << endl;
     return hash_list;
 }

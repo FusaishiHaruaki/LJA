@@ -350,6 +350,7 @@ GraphAlignment ManyKCorrector::ReadRecord::getBlock(size_t num) const {
 
 size_t ManyKCorrect(logging::Logger &logger, SparseDBG &dbg, RecordStorage &reads_storage, double threshold,
                     double reliable_threshold, size_t K, size_t expectedCoverage, size_t threads) {
+    logging::TimeSpace t;
     FillReliableWithConnections(logger, dbg, reliable_threshold);
     logger.info() << "Correcting low covered regions in reads with K = " << K << std::endl;
     ManyKCorrector corrector(dbg, reads_storage, K, expectedCoverage, reliable_threshold, threshold);
@@ -372,5 +373,7 @@ size_t ManyKCorrect(logging::Logger &logger, SparseDBG &dbg, RecordStorage &read
     }
     reads_storage.applyCorrections(logger, threads);
     logger.info() << "Corrected low covered regions in " << cnt.get() << " reads with K = " << K << std::endl;
+    std::cout << "ManyKCorrect(logging::Logger &logger, SparseDBG &" << dbg.size() << ", RecordStorage &" << reads_storage.size() << ", double " << threshold << ", "
+                    << "double " << reliable_threshold << ", size_t " << K << ", size_t " << expectedCoverage << ", size_t " << threads << ") time: " << t.get() << std::endl;
     return cnt.get();
 }

@@ -130,7 +130,7 @@ bool close_gaps, bool remove_bad, bool skip, bool debug, bool load) {
     std::experimental::filesystem::path res;
     res = dir / "corrected.fasta";
     logger.info() << "Initial correction results with k = " << k << " printed to " << res << std::endl;
-    cout << "Alternative Correction time: " << t.get() << endl;
+    cout << "AlternativeCorrection time: " << t.get() << endl;
     return {res, dir / "graph.fasta"};
 
 }
