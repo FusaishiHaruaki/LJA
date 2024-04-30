@@ -659,8 +659,8 @@ void SparseDBG::fillAnchors(size_t w, logging::Logger &logger, size_t threads,
         anchors.emplace(tmp);
     }
     logger.trace() << "Added " << anchors.size() << " anchors" << std::endl;
-    cout << "SparseDBG::fillAnchors(size_t " << w << ", logging::Logger &logger, size_t " << threads << ",
-                            const std::unordered_set<hashing::htype, hashing::alt_hasher<hashing::htype>> &" << to_add.size() << ") time: " << t.get() << endl;
+    cout << "SparseDBG::fillAnchors(size_t " << w << ", logging::Logger &logger, size_t " << threads << ", "
+                            << "const std::unordered_set<hashing::htype, hashing::alt_hasher<hashing::htype>> &" << to_add.size() << ") time: " << t.get() << endl;
 }
 
 EdgePosition SparseDBG::getAnchor(const hashing::KWH &kwh) {
