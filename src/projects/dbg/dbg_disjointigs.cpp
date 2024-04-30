@@ -101,7 +101,7 @@ void extractLinearDisjointigs(SparseDBG &sdbg, ParallelRecordCollector<Sequence>
                 }
             };
     processObjects(sdbg.begin(), sdbg.end(), logger, threads, task);
-    cout << "extractLinearDisjointigs(SparseDBG &" << sdbg.size() << ", ParallelRecordCollector<Sequence> &" << res.size() << ", logging::Logger &logger, size_t " << threads << ") time: " << t.get() << endl;
+    std::cout << "extractLinearDisjointigs(SparseDBG &" << sdbg.size() << ", ParallelRecordCollector<Sequence> &" << res.size() << ", logging::Logger &logger, size_t " << threads << ") time: " << t.get() << std::endl;
 }
 
 void extractCircularDisjointigs(SparseDBG &sdbg, ParallelRecordCollector<Sequence> &res, logging::Logger &logger,
@@ -133,7 +133,7 @@ void extractCircularDisjointigs(SparseDBG &sdbg, ParallelRecordCollector<Sequenc
                 res.add(tmp + disjointig + disjointig);
             };
     processObjects(sdbg.begin(), sdbg.end(), logger, threads, task);
-    cout << "extractCircularDisjointigs(SparseDBG &" << sdbg.size() << ", ParallelRecordCollector<Sequence> &" << res.size() << ", logging::Logger &logger, size_t " << threads << ") time: " << t.get() << endl;
+    std::cout << "extractCircularDisjointigs(SparseDBG &" << sdbg.size() << ", ParallelRecordCollector<Sequence> &" << res.size() << ", logging::Logger &logger, size_t " << threads << ") time: " << t.get() << std::endl;
 }
 
 std::vector<Sequence> extractDisjointigs(logging::Logger &logger, SparseDBG &sdbg, size_t threads) {
@@ -170,6 +170,6 @@ std::vector<Sequence> constructDisjointigs(const RollingHash &hasher, size_t w, 
 //    os.close();
 
     disjointigs = extractDisjointigs(logger, sdbg, threads);
-    cout << "constructDisjointigs(const RollingHash &hasher, size_t " << w << ", const io::Library &reads_file, const std::vector<htype> &" << hash_list <<", size_t " << threads << ", logging::Logger &logger) time: " << t.get() << endl;
+    std::cout << "constructDisjointigs(const RollingHash &hasher, size_t " << w << ", const io::Library &reads_file, const std::vector<htype> &" << hash_list.size() <<", size_t " << threads << ", logging::Logger &logger) time: " << t.get() << std::endl;
     return disjointigs;
 }
