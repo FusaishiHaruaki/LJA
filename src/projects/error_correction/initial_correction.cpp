@@ -24,7 +24,7 @@ size_t tournament(const Sequence &bulge, const std::vector<Sequence> &candidates
         }
     }
     //cout << "tournament time: " << t.get() << endl;
-    cout << "tournament(const Sequence &" << bulge << ", const std::vector<Sequence> &" << candidates.size() << ", bool " << dump << ") time: " << t.get() << endl;
+    cout << "tournament(const Sequence &" << bulge.size() << ", const std::vector<Sequence> &" << candidates.size() << ", bool " << dump << ") time: " << t.get() << endl;
     return winner;
 }
 
