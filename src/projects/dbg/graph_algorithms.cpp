@@ -1,5 +1,6 @@
 #include "graph_algorithms.hpp"
 #include <time.h>
+#include "common/logging.hpp"
 
 using namespace hashing;
 namespace dbg {
@@ -29,7 +30,8 @@ namespace dbg {
             lens_distr[std::min(l, lens_distr.size() - 1)] += 1;
         }
 
-        cout << "fillCoverage time: " << t.get() << endl;
+        cout << "fillCoverage(SparseDBG &" << sdbg.size() << ", logging::Logger &logger, Iterator begin, Iterator end, size_t " << threads << ",
+                      const RollingHash &hasher, const size_t " << min_read_size << ") time: " << t.get() << endl;
     }
 
     SparseDBG constructSparseDBGFromReads(logging::Logger &logger, const io::Library &reads_file, size_t threads,
@@ -224,6 +226,8 @@ namespace dbg {
                 };
         processObjects(sdbg.begin(), sdbg.end(), logger, threads, task);
         logger.trace() << "Finished merging linear unbranching paths" << std::endl;
+        cout << "mergeLinearPaths(logging::Logger &logger, SparseDBG &" << sdbg << ", size_t " << threads << ") atime: " << t.get() << endl;
+        
     }
 
     void mergeCyclicPaths(logging::Logger &logger, SparseDBG &sdbg, size_t threads) {
@@ -258,7 +262,7 @@ namespace dbg {
             mergeLoop(path);
         }
         logger.trace() << "Finished merging cyclic paths" << std::endl;
-        cout << "mergeCyclicPaths atime: " << t.get() << endl;
+        cout << "mergeCyclicPaths(logging::Logger &logger, SparseDBG &" << sdbg << ", size_t " << threads << ") atime: " << t.get() << endl;
     }
 
     void mergeAll(logging::Logger &logger, SparseDBG &sdbg, size_t threads) {
@@ -337,7 +341,8 @@ namespace dbg {
         }
         os.close();
         logger.info() << "Finished read alignment. Results are in " << (dir / "alignments.txt") << std::endl;
-        cout << "alignLib time: " << t.get() << endl;
+        cout << "alignLib(logging::Logger &logger, SparseDBG &" << dbg << ", const io::Library &align_lib, const RollingHash &hasher,
+             const size_t " << w << ", const std::experimental::filesystem::path &" << dir << ", size_t " << threads << ") time: " << t.get() << endl;
         return alignments_file;
     }
 
@@ -361,7 +366,7 @@ namespace dbg {
         reader.reset();
         FillSparseDBGEdges(res, sequences.begin(), sequences.end(), logger, threads, hasher.getK() + 1);
         logger.info() << "Finished loading graph" << std::endl;
-        cout << "LoadDBGFromFasta time: " << t.get() << endl;
+        cout << "LoadDBGFromFasta(const io::Library &lib, RollingHash &hasher, logging::Logger &logger, size_t " << threads << ") time: " << t.get() << endl;
         return std::move(res);
     }
 }

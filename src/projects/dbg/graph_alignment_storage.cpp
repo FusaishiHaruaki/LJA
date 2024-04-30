@@ -350,6 +350,7 @@ void RecordStorage::invalidateBad(logging::Logger &logger, size_t threads, doubl
 
 void RecordStorage::invalidateBad(logging::Logger &logger, size_t threads, const std::function<bool(const Edge &)> &is_bad,
                                   const std::string &message) {
+    logging::TimeSpace t;
     std::vector<AlignedRead *> to_delete;
     for (AlignedRead &alignedRead : reads) {
         bool good = true;
@@ -369,6 +370,8 @@ void RecordStorage::invalidateBad(logging::Logger &logger, size_t threads, const
         invalidateRead(*to_delete[i], message);
     }
     logger.info() << "Uncorrected reads were removed." << std::endl;
+    std::cout << "RecordStorage::invalidateBad(logging::Logger &logger, size_t " << threads << ", const std::function<bool(const Edge &)> &is_bad, "
+                                  << "const std::string &" << message << ") time: " << t.get() << std::endl;
 }
 
 void RecordStorage::invalidateSubreads(logging::Logger &logger, size_t threads) {
@@ -438,6 +441,7 @@ void RecordStorage::reroute(AlignedRead &alignedRead, const GraphAlignment &corr
 }
 
 void RecordStorage::applyCorrections(logging::Logger &logger, size_t threads) {
+    logging::TimeSpace t;
     if(size() > 10000)
         logger.info() << "Applying corrections to reads" << std::endl;
     omp_set_num_threads(threads);
@@ -450,6 +454,7 @@ void RecordStorage::applyCorrections(logging::Logger &logger, size_t threads) {
     flush();
     if(size() > 10000)
         logger.info() << "Applied correction to " << cnt.get() << " reads" << std::endl;
+    std::cout << "RecordStorage::applyCorrections(logging::Logger &logger, size_t " << threads << ") time: " << t.get() << std::endl;
 }
 
 void RecordStorage::printReadAlignments(logging::Logger &logger, const std::experimental::filesystem::path &path) const {

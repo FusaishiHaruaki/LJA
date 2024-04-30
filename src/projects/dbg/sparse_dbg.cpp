@@ -1,5 +1,7 @@
 #include "sparse_dbg.hpp"
 #include <time.h>
+#include "common/logging.hpp"
+
 using namespace dbg;
 
 Edge Edge::_fake = Edge(nullptr, nullptr, Sequence());
@@ -361,6 +363,7 @@ bool Vertex::operator!=(const Vertex &other) const {
 }
 
 void SparseDBG::checkSeqFilled(size_t threads, logging::Logger &logger) {
+    logging::TimeSpace t;
     logger.trace() << "Checking vertex sequences" << std::endl;
     std::function<void(size_t, std::pair<const hashing::htype, Vertex> &)> task =
             [&logger](size_t pos, std::pair<const hashing::htype, Vertex> &pair) {
@@ -380,6 +383,7 @@ void SparseDBG::checkSeqFilled(size_t threads, logging::Logger &logger) {
             };
     processObjects(v.begin(), v.end(), logger, threads, task);
     logger.trace() << "Vertex sequence check success" << std::endl;
+    std::cout << "SparseDBG::checkSeqFilled(size_t " << threads << ", logging::Logger &logger) time: " << t.get() << std::endl;
 }
 
 SparseDBG SparseDBG::Subgraph(std::vector<Segment<Edge>> &pieces) {
@@ -437,6 +441,7 @@ SparseDBG SparseDBG::SplitGraph(const std::vector<EdgePosition> &breaks) {
 }
 
 SparseDBG SparseDBG::AddNewSequences(logging::Logger &logger, size_t threads, const std::vector<Sequence> &new_seqs) {
+    logging::TimeSpace t;
     SparseDBG res(hasher_);
     for(Vertex &it : verticesUnique()) {
         res.addVertex(it);
@@ -462,10 +467,12 @@ SparseDBG SparseDBG::AddNewSequences(logging::Logger &logger, size_t threads, co
     };
     ParallelProcessor<const Sequence>(task1, logger, threads).processObjects(new_seqs.begin(), new_seqs.end(), 1024);
 //    processObjects<std::vector<Sequence>::const_iterator>(new_seqs.begin(), new_seqs.end(), logger, threads, task1);
+    std::cout << "SparseDBG::AddNewSequences(logging::Logger &logger, size_t " << threads << ", const std::vector<Sequence> &" << new_seqs.size() << ") time: " << t.get() << std::endl;
     return std::move(res);
 }
 
 void SparseDBG::checkConsistency(size_t threads, logging::Logger &logger) {
+    logging::TimeSpace t;
     logger.trace() << "Checking consistency" << std::endl;
     std::function<void(size_t, std::pair<const hashing::htype, Vertex> &)> task =
             [this](size_t pos, std::pair<const hashing::htype, Vertex> &pair) {
@@ -475,9 +482,11 @@ void SparseDBG::checkConsistency(size_t threads, logging::Logger &logger) {
             };
     processObjects(v.begin(), v.end(), logger, threads, task);
     logger.trace() << "Consistency check success" << std::endl;
+    std::cout << "SparseDBG::checkConsistency(size_t " << threads << ", logging::Logger &logger) time: " << t.get() << std::endl;
 }
 
 void SparseDBG::checkDBGConsistency(size_t threads, logging::Logger &logger) {
+    logging::TimeSpace t;
     logger.trace() << "Checking kmer index" << std::endl;
     std::function<void(size_t, Edge &)> task =
             [this](size_t pos, Edge &edge) {
@@ -536,6 +545,7 @@ void SparseDBG::checkDBGConsistency(size_t threads, logging::Logger &logger) {
     if(!ok) {
         logger.trace() << "Duplicated k-mers in the graph" << std::endl;
     }
+    std::cout << "SparseDBG::checkDBGConsistency(size_t " << threads << ", logging::Logger &logger) time: " << t.get() << std::endl;
 }
 
 Vertex &SparseDBG::addVertex(const hashing::KWH &kwh) {
@@ -619,7 +629,7 @@ void SparseDBG::fillAnchors(size_t w, logging::Logger &logger, size_t threads) {
         anchors.emplace(tmp);
     }
     logger.trace() << "Added " << anchors.size() << " anchors" << std::endl;
-    cout << "SparseDBG::fillAnchors atime: " << t.get() << endl;
+    cout << "SparseDBG::fillAnchors(size_t " << w << ", logging::Logger &logger, size_t " << threads << ") time: " << t.get() << endl;
 }
 
 void SparseDBG::fillAnchors(size_t w, logging::Logger &logger, size_t threads,
@@ -649,7 +659,8 @@ void SparseDBG::fillAnchors(size_t w, logging::Logger &logger, size_t threads,
         anchors.emplace(tmp);
     }
     logger.trace() << "Added " << anchors.size() << " anchors" << std::endl;
-    cout << "SparseDBG::fillAnchors atime: " << t.get() << endl;
+    cout << "SparseDBG::fillAnchors(size_t " << w << ", logging::Logger &logger, size_t " << threads << ",
+                            const std::unordered_set<hashing::htype, hashing::alt_hasher<hashing::htype>> &" << to_add.size() << ") time: " << t.get() << endl;
 }
 
 EdgePosition SparseDBG::getAnchor(const hashing::KWH &kwh) {

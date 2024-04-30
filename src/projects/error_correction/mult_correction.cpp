@@ -1,4 +1,6 @@
 #include "mult_correction.hpp"
+#include "common/logging.hpp"
+
 using namespace dbg;
 void printAl(logging::Logger &logger, std::unordered_map<const dbg::Edge *, CompactPath> &unique_extensions,
              const dbg::GraphAlignment &al) {
@@ -257,6 +259,7 @@ GraphAlignment correctRead(std::unordered_map<const Edge *, CompactPath> &unique
 
 void correctReads(logging::Logger &logger, size_t threads, RecordStorage &reads_storage,
                   std::unordered_map<const Edge *, CompactPath> &unique_extensions) {
+    logging::TimeSpace t;
     omp_set_num_threads(threads);
     logger.info() << "Correcting reads using unique edge extensions" << std::endl;
 #pragma omp parallel for default(none) schedule(dynamic, 100) shared(reads_storage, unique_extensions)
@@ -274,6 +277,8 @@ void correctReads(logging::Logger &logger, size_t threads, RecordStorage &reads_
         }
     }
     reads_storage.applyCorrections(logger, threads);
+    std::cout << "mult_correction correctReads(logging::Logger &logger, size_t " << threads << ", RecordStorage &" << reads_storage.size() << ", "
+                  << "std::unordered_map<const Edge *, CompactPath> &" << unique_extensions.size() << ") time: " << t.get() << std::endl;
 }
 
 void CorrectBasedOnUnique(logging::Logger &logger, size_t threads, SparseDBG &sdbg, RecordStorage &reads_storage,

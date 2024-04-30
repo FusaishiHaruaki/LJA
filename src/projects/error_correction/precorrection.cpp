@@ -3,6 +3,8 @@
 #include "precorrection.hpp"
 #include "dbg/sparse_dbg.hpp"
 
+#include "common/logging.hpp"
+
 dbg::GraphAlignment FindOnlyPathForward(dbg::Vertex &start, double reliable_coverage, size_t max_size, dbg::Vertex *finish = nullptr) {
     dbg::GraphAlignment res(start);
     // clock_t t = clock();
@@ -69,6 +71,8 @@ dbg::GraphAlignment PrecorrectBulge(dbg::Edge &bulge, double reliable_coverage) 
 size_t Precorrect(logging::Logger &logger, size_t threads, dbg::SparseDBG &dbg, RecordStorage &reads_storage,
                   double reliable_threshold) {
     // clock_t t = clock();
+    logging::TimeSpace t;
+
     logger.info() << "Precorrecting reads" << std::endl;
     ParallelRecordCollector<std::string> results(threads);
     ParallelCounter cnt(threads);
@@ -112,5 +116,7 @@ size_t Precorrect(logging::Logger &logger, size_t threads, dbg::SparseDBG &dbg, 
     reads_storage.applyCorrections(logger, threads);
     logger.info() << "Corrected simple errors in " << cnt.get() << " reads" << std::endl;
     // cout << "Precorrect time: " << ((float)clock() - t)/CLOCKS_PER_SEC << endl;
+    std::cout << "Precorrect(logging::Logger &logger, size_t " << threads << ", dbg::SparseDBG &" << dbg.size() << ", RecordStorage &" << reads_storage.size() << ", "
+                  << "double " << reliable_threshold << ") time: " << t.get() << std::endl;
     return cnt.get();
 }
