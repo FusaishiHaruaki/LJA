@@ -114,6 +114,8 @@ inline GraphAlignment CorrectSuffix(const GraphAlignment &al) {
 
 void CorrectTips(logging::Logger &logger, size_t threads, SparseDBG &dbg,
                         const std::vector<RecordStorage *> &storages) {
+    logging::TimeSpace t;
+
     logger.info() << "Correcting tips using reliable edge marks" << std::endl;
     omp_set_num_threads(threads);
     ParallelCounter cnt(threads);
@@ -133,6 +135,8 @@ void CorrectTips(logging::Logger &logger, size_t threads, SparseDBG &dbg,
         }
         storageIt->applyCorrections(logger, threads);
     }
+    std::cout << "CorrectTips(logging::Logger &logger, size_t " << threads << ", SparseDBG &" << dbg.size() << ", "
+                        << "const std::vector<RecordStorage *> &" << storages.size() << ") time: " << t.get() << std::endl;
 }
 
 void TipCorrectionPipeline(logging::Logger &logger, dbg::SparseDBG &dbg, RecordStorage &reads, size_t threads,

@@ -1,5 +1,6 @@
 #include "graph_modification.hpp"
 #include "visualization.hpp"
+#include "common/logging.hpp"
 
 using namespace dbg;
 GraphAlignment realignRead(const GraphAlignment &al,
@@ -47,6 +48,8 @@ GraphAlignment realignRead(const GraphAlignment &al,
 
 void RemoveUncovered(logging::Logger &logger, size_t threads, SparseDBG &dbg, const std::vector<RecordStorage *> &storages,
                 size_t new_extension_size) {
+    logging::TimeSpace t;
+
     logger.info() << "Applying changes to the graph" << std::endl;
     omp_set_num_threads(threads);
     logger.trace() << "Collecting covered edge segments" << std::endl;
@@ -172,10 +175,15 @@ void RemoveUncovered(logging::Logger &logger, size_t threads, SparseDBG &dbg, co
         storage = std::move(new_storage);
     }
     dbg = std::move(subgraph);
+    std::cout << "RemoveUncovered(logging::Logger &logger, size_t " << threads << ", SparseDBG &" << dbg.size() << ", const std::vector<RecordStorage *> &" << storages << ",
+                size_t " << new_extension_size << ") time: " << t.get() << std::endl;
+
 }
 
 void AddConnections(logging::Logger &logger, size_t threads, SparseDBG &dbg, const std::vector<RecordStorage *> &storages,
                const std::vector<Connection> &connections) {
+    logging::TimeSpace t;
+    
     logger.info() << "Adding new connections to the graph" << std::endl;
     size_t k = dbg.hasher().getK();
     std::vector<EdgePosition> break_positions;
@@ -233,6 +241,8 @@ void AddConnections(logging::Logger &logger, size_t threads, SparseDBG &dbg, con
         storage = std::move(new_storage);
     }
     dbg = std::move(subgraph);
+    std::cout << "AddConnections(logging::Logger &logger, size_t " << threads << ", SparseDBG &" << dbg.size() << ", const std::vector<RecordStorage *> &" << storages.size() << ", "
+               << "const std::vector<Connection> &connections) time: " << t.get() << std::endl;
 }
 
 Connection::Connection(dbg::EdgePosition pos1, dbg::EdgePosition pos2, Sequence connection) :

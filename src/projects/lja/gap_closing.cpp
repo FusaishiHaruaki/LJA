@@ -14,6 +14,8 @@ bool GapCloser::HasInnerDuplications(const Sequence &seq, const hashing::Rolling
 }
 
 std::vector<Connection> GapCloser::GapPatches(logging::Logger &logger, dbg::SparseDBG &dbg, size_t threads) {
+    logging::TimeSpace t;
+
     logger.info() << "Started gap closing procedure" << std::endl;
     size_t k = dbg.hasher().getK();
     std::vector<dbg::Edge *> tips;
@@ -111,6 +113,7 @@ std::vector<Connection> GapCloser::GapPatches(logging::Logger &logger, dbg::Spar
         }
     }
     logger.info() << "Collected " << res.size() << " unique overlaps." << std::endl;
+    std::cout << "GapCloser::GapPatches(logging::Logger &logger, dbg::SparseDBG &" << dbg.size() << ", size_t " << threads << ") time: " << t.get() << std::endl;
     return std::move(res);
 }
 

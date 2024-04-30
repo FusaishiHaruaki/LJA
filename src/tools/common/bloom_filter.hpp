@@ -295,7 +295,7 @@ public:
                 res += (c >> i) & 1u;
             }
         }
-        cout << "count_bits time: " << t.get() << endl;
+        cout << "count_bits() time: " << t.get() << endl;
         return {res, bit_table_.size() * 8};
     }
 
