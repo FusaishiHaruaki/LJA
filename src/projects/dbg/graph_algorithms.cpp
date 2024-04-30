@@ -226,7 +226,7 @@ namespace dbg {
                 };
         processObjects(sdbg.begin(), sdbg.end(), logger, threads, task);
         logger.trace() << "Finished merging linear unbranching paths" << std::endl;
-        cout << "mergeLinearPaths(logging::Logger &logger, SparseDBG &" << sdbg << ", size_t " << threads << ") atime: " << t.get() << endl;
+        cout << "mergeLinearPaths(logging::Logger &logger, SparseDBG &" << sdbg.size() << ", size_t " << threads << ") atime: " << t.get() << endl;
         
     }
 
