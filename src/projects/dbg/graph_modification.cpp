@@ -175,8 +175,8 @@ void RemoveUncovered(logging::Logger &logger, size_t threads, SparseDBG &dbg, co
         storage = std::move(new_storage);
     }
     dbg = std::move(subgraph);
-    std::cout << "RemoveUncovered(logging::Logger &logger, size_t " << threads << ", SparseDBG &" << dbg.size() << ", const std::vector<RecordStorage *> &" << storages << ",
-                size_t " << new_extension_size << ") time: " << t.get() << std::endl;
+    std::cout << "RemoveUncovered(logging::Logger &logger, size_t " << threads << ", SparseDBG &" << dbg.size() << ", const std::vector<RecordStorage *> &" << storages << ", "
+                << "size_t " << new_extension_size << ") time: " << t.get() << std::endl;
 
 }
 
