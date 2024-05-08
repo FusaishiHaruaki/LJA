@@ -227,6 +227,11 @@ public:
         inserted_element_count_ = 0;
     }
 
+    inline const std::size_t table_size() const // Written by Warren to get table size
+    {
+        return bit_table_.size();
+    }
+
     inline void insert(const unsigned char* key_begin, const std::size_t& length) {
         std::size_t bit_index = 0;
         std::size_t bit       = 0;
