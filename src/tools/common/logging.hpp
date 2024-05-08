@@ -51,7 +51,7 @@ namespace logging {
             //         << itos(worktime % 60, 2) << " " << mem << t << " ";
             ss << itos(worktime / 60 / 60 / 1000, 2) << ":" << itos(worktime / 1000 / 60 % 60, 2)
                     << ":" << itos(worktime / 1000 % 60, 2) << ":"
-                    << itos(worktime % 1000, 2) << " " << mem << t << " ";
+                    << itos(worktime % 1000, 2) << " " << mem << t << " " << "total: " << worktime;
             return ss.str();
         }
     };
