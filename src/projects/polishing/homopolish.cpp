@@ -170,7 +170,7 @@ struct ContigInfo {
     }
 
     string MSAConsensus(vector<string> &s, Logger & logger) {
-        logging::TimeSpace t;
+        // logging::TimeSpace t;
 //Magic consts from spoa default settings
         auto alignment_engine = spoa::AlignmentEngine::Create(
 // -8 in default for third parameter(gap) opening, -6 for forth(gap extension)
@@ -224,7 +224,7 @@ struct ContigInfo {
         if (pref_remove > suf_remove) {
             return "";
         }
-        cout << "MSAConsensus time: " << t.get() << endl;
+        // cout << "MSAConsensus time: " << t.get() << endl;
         return consensus.substr(pref_remove, suf_remove - pref_remove + 1);
 
     }

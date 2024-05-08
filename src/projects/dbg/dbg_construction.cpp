@@ -41,6 +41,7 @@ findJunctions(logging::Logger &logger, const std::vector<Sequence> &disjointigs,
         }
     };
     logger.info() << "Filling bloom filter with k+1-mers." << std::endl;
+    std::cout << "Bloom Filter table size: " << filter.bit_table_.size() << std::endl;
 //    ParallelProcessor<Sequence> fill_processor(task, logger, threads);
 //    fill_processor.doAfter = [&filter, threads]() {
 //        filter.dump(threads);
