@@ -35,7 +35,7 @@ namespace logging {
             timespec finish{};
             clock_gettime(CLOCK_MONOTONIC, &finish);
             // auto worktime = size_t(double(finish.tv_sec - start.tv_sec) + double(finish.tv_nsec - start.tv_nsec) / 1000000000.0);
-            auto worktime = size_t(double(finish.tv_sec - start.tv_sec) / 1000 + double(finish.tv_nsec - start.tv_nsec) / 1000000.0);
+            auto worktime = size_t(double(finish.tv_sec - start.tv_sec) * 1000 + double(finish.tv_nsec - start.tv_nsec) / 1000000.0);
             struct sysinfo memInfo;
             sysinfo (&memInfo);
             struct rusage usage;
