@@ -90,10 +90,16 @@ namespace hashing {
 
         htype fhash;
         htype rhash;
-        Sequence seq;
+        Sequence seq; 
     public:
         const RollingHash &hasher;
         size_t pos;
+        static int accumulatedTime_func1;
+        static int numCalls_func1;
+        static int accumulatedTime_func2;
+        static int numCalls_func2;
+        static int accumulatedTime_func3;
+        static int numCalls_func3;
 
         KWH(const RollingHash &_hasher, const Sequence &_seq, size_t _pos) :
                 hasher(_hasher), seq(_seq), pos(_pos), fhash(_hasher.hash(_seq, _pos)),
@@ -122,32 +128,38 @@ namespace hashing {
             return rhash;
         }
 
-        htype extendRight(unsigned char c) const {
-            return std::min(hasher.extendRight(seq, pos, fhash, c),
+        htype extendRight(unsigned char c) const {  // profile this
+            htype result = std::min(hasher.extendRight(seq, pos, fhash, c),
                             hasher.extendLeft(!seq, seq.size() - pos - hasher.getK(), rhash, c ^ 3u));
+            return result;
         }
 
-        htype extendLeft(unsigned char c) const {
-            return std::min(hasher.extendLeft(seq, pos, fhash, c),
+        htype extendLeft(unsigned char c) const { // profile this
+            htype result = std::min(hasher.extendLeft(seq, pos, fhash, c),
                             hasher.extendRight(!seq, seq.size() - pos - hasher.getK(), rhash, c ^ 3u));
+            return result;
         }
 
-        KWH next() const {
-            return {hasher, seq, pos + 1, hasher.next(seq, pos, fhash),
+        KWH next() const { // profile this
+            KWH result = {hasher, seq, pos + 1, hasher.next(seq, pos, fhash),
                     hasher.prev(!seq, seq.size() - pos - hasher.getK(), rhash)};
+            return result;
         }
 
-        KWH prev() const {
-            return {hasher, seq, pos - 1, hasher.prev(seq, pos, fhash),
+        KWH prev() const { // profile this
+            KWH result = {hasher, seq, pos - 1, hasher.prev(seq, pos, fhash),
                     hasher.next(!seq, seq.size() - pos - hasher.getK(), rhash)};
+            return result;
         }
 
-        bool hasNext() const {
-            return hasher.hasNext(seq, pos);
+        bool hasNext() const { // profile this
+            bool result = hasher.hasNext(seq, pos);
+            return result;
         }
 
-        bool hasPrev() const {
-            return hasher.hasPrev(seq, pos);
+        bool hasPrev() const { // profile this
+            bool result = hasher.hasPrev(seq, pos);
+            return result;
         }
 
         KWH &operator=(const KWH &other) {
