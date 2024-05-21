@@ -161,7 +161,7 @@ namespace hashing {
             return result;
         }
 
-        htype extendLeft(unsigned char c) const { // profile this
+        htype extendLeft(unsigned char c) { // profile this
             logging::TimeSpace t;
             htype result = std::min(hasher.extendLeft(seq, pos, fhash, c),
                             hasher.extendRight(!seq, seq.size() - pos - hasher.getK(), rhash, c ^ 3u));
@@ -170,7 +170,7 @@ namespace hashing {
             return result;
         }
 
-        KWH next() const { // profile this
+        KWH next() { // profile this
             logging::TimeSpace t;
             KWH result = {hasher, seq, pos + 1, hasher.next(seq, pos, fhash),
                     hasher.prev(!seq, seq.size() - pos - hasher.getK(), rhash)};
@@ -179,7 +179,7 @@ namespace hashing {
             return result;
         }
 
-        KWH prev() const { // profile this
+        KWH prev() { // profile this
             logging::TimeSpace t;
             KWH result = {hasher, seq, pos - 1, hasher.prev(seq, pos, fhash),
                     hasher.next(!seq, seq.size() - pos - hasher.getK(), rhash)};
@@ -188,7 +188,7 @@ namespace hashing {
             return result;
         }
 
-        bool hasNext() const { // profile this
+        bool hasNext() { // profile this
             logging::TimeSpace t;
             bool result = hasher.hasNext(seq, pos);
             accumulatedTime_hasNext += t.get_nanoseconds();
@@ -196,7 +196,7 @@ namespace hashing {
             return result;
         }
 
-        bool hasPrev() const { // profile this
+        bool hasPrev() { // profile this
             logging::TimeSpace t;
             bool result = hasher.hasPrev(seq, pos);
             accumulatedTime_hasPrev += t.get_nanoseconds();
