@@ -95,18 +95,18 @@ namespace hashing {
     public:
         const RollingHash &hasher;
         size_t pos;
-        static size_t accumulatedTime_extendRight = 0;
-        static int numCalls_extendRight = 0;
-        static size_t accumulatedTime_extendLeft = 0;
-        static int numCalls_extendLeft = 0;
-        static size_t accumulatedTime_next = 0;
-        static int numCalls_next = 0;
-        static size_t accumulatedTime_prev = 0;
-        static int numCalls_prev = 0;
-        static size_t accumulatedTime_hasNext = 0;
-        static int numCalls_hasNext = 0;
-        static size_t accumulatedTime_hasPrev = 0;
-        static int numCalls_hasPrev = 0;
+        static size_t accumulatedTime_extendRight;
+        static int numCalls_extendRight;
+        static size_t accumulatedTime_extendLeft;
+        static int numCalls_extendLeft;
+        static size_t accumulatedTime_next;
+        static int numCalls_next;
+        static size_t accumulatedTime_prev;
+        static int numCalls_prev;
+        static size_t accumulatedTime_hasNext;
+        static int numCalls_hasNext;
+        static size_t accumulatedTime_hasPrev;
+        static int numCalls_hasPrev;
 
         KWH(const RollingHash &_hasher, const Sequence &_seq, size_t _pos) :
                 hasher(_hasher), seq(_seq), pos(_pos), fhash(_hasher.hash(_seq, _pos)),
@@ -135,6 +135,20 @@ namespace hashing {
             return rhash;
         }
 
+        static void initialize() {
+            accumulatedTime_extendRight = 0;
+            numCalls_extendRight = 0;
+            accumulatedTime_extendLeft = 0;
+            numCalls_extendLeft = 0;
+            accumulatedTime_next = 0;
+            numCalls_next = 0;
+            accumulatedTime_prev = 0;
+            numCalls_prev = 0;
+            accumulatedTime_hasNext = 0;
+            numCalls_hasNext = 0;
+            accumulatedTime_hasPrev = 0;
+            numCalls_hasPrev = 0;
+        }
         static void print_times() {
             std::stringstream ss;
             ss << "accumulatedTime_extendRight: " << accumulatedTime_extendRight

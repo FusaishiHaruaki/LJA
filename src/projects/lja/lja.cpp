@@ -329,6 +329,7 @@ std::string constructMessage() {
 }
 
 int main(int argc, char **argv) {
+    KWH::initialize();
     CLParser parser({"output-dir=",
                      "threads=16",
                      "k-mer-size=501",
