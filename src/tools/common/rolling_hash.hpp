@@ -95,18 +95,18 @@ namespace hashing {
     public:
         const RollingHash &hasher;
         size_t pos;
-        inline static size_t accumulatedTime_extendRight = 0;
-        inline static int numCalls_extendRight = 0;
-        inline static size_t accumulatedTime_extendLeft = 0;
-        inline static int numCalls_extendLeft = 0;
-        inline static size_t accumulatedTime_next = 0;
-        inline static int numCalls_next = 0;
-        inline static size_t accumulatedTime_prev = 0;
-        inline static int numCalls_prev = 0;
-        inline static size_t accumulatedTime_hasNext = 0;
-        inline static int numCalls_hasNext = 0;
-        inline static size_t accumulatedTime_hasPrev = 0;
-        inline static int numCalls_hasPrev = 0;
+        static size_t accumulatedTime_extendRight = 0;
+        static int numCalls_extendRight = 0;
+        static size_t accumulatedTime_extendLeft = 0;
+        static int numCalls_extendLeft = 0;
+        static size_t accumulatedTime_next = 0;
+        static int numCalls_next = 0;
+        static size_t accumulatedTime_prev = 0;
+        static int numCalls_prev = 0;
+        static size_t accumulatedTime_hasNext = 0;
+        static int numCalls_hasNext = 0;
+        static size_t accumulatedTime_hasPrev = 0;
+        static int numCalls_hasPrev = 0;
 
         KWH(const RollingHash &_hasher, const Sequence &_seq, size_t _pos) :
                 hasher(_hasher), seq(_seq), pos(_pos), fhash(_hasher.hash(_seq, _pos)),
