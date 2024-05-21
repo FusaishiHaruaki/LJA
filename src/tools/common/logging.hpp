@@ -54,6 +54,14 @@ namespace logging {
                     << itos(worktime % 1000, 2) << " " << mem << t << " " << "total: " << worktime;
             return ss.str();
         }
+
+        size_t get_nanoseconds() const {
+            timespec finish{};
+            clock_gettime(CLOCK_MONOTONIC, &finish);
+            // auto worktime = size_t(double(finish.tv_sec - start.tv_sec) + double(finish.tv_nsec - start.tv_nsec) / 1000000000.0);
+            auto worktime = size_t((finish.tv_sec - start.tv_sec) * 1000000000 + (finish.tv_nsec - start.tv_nsec));
+            return worktime;
+        }
     };
 
     class LoggerStorage {

@@ -6,6 +6,7 @@
 #include "common/hash_utils.hpp"
 #include "sequences/sequence.hpp"
 #include <deque>
+#include "common/logging.hpp"
 
 namespace hashing {
     template<typename T, typename U>
@@ -94,12 +95,18 @@ namespace hashing {
     public:
         const RollingHash &hasher;
         size_t pos;
-        static int accumulatedTime_func1;
-        static int numCalls_func1;
-        static int accumulatedTime_func2;
-        static int numCalls_func2;
-        static int accumulatedTime_func3;
-        static int numCalls_func3;
+        static size_t accumulatedTime_extendRight = 0;
+        static int numCalls_extendRight = 0;
+        static size_t accumulatedTime_extendLeft = 0;
+        static int numCalls_extendLeft = 0;
+        static size_t accumulatedTime_next = 0;
+        static int numCalls_next = 0;
+        static size_t accumulatedTime_prev = 0;
+        static int numCalls_prev = 0;
+        static size_t accumulatedTime_hasNext = 0;
+        static int numCalls_hasNext = 0;
+        static size_t accumulatedTime_hasPrev = 0;
+        static int numCalls_hasPrev = 0;
 
         KWH(const RollingHash &_hasher, const Sequence &_seq, size_t _pos) :
                 hasher(_hasher), seq(_seq), pos(_pos), fhash(_hasher.hash(_seq, _pos)),
@@ -128,37 +135,72 @@ namespace hashing {
             return rhash;
         }
 
+        static void print_times() {
+            std::stringstream ss;
+            ss << "accumulatedTime_extendRight: " << accumulatedTime_extendRight
+            << "\nnumCalls_extendRight: " << numCalls_extendRight
+            << "\naccumulatedTime_extendLeft: " << accumulatedTime_extendLeft
+            << "\nnumCalls_extendLeft: " << numCalls_extendLeft
+            << "\naccumulatedTime_next: " << accumulatedTime_next
+            << "\nnumCalls_next: " << numCalls_next
+            << "\naccumulatedTime_prev: " << accumulatedTime_prev
+            << "\nnumCalls_prev: " << numCalls_prev
+            << "\naccumulatedTime_hasNext: " << accumulatedTime_hasNext
+            << "\nnumCalls_hasNext: " << numCalls_hasNext
+            << "\naccumulatedTime_hasPrev: " << accumulatedTime_hasPrev
+            << "\nnumCalls_hasPrev: " << numCalls_hasPrev;
+            std::cout << ss.str() << endl;
+        }
+
         htype extendRight(unsigned char c) const {  // profile this
+            logging::TimeSpace t;
             htype result = std::min(hasher.extendRight(seq, pos, fhash, c),
                             hasher.extendLeft(!seq, seq.size() - pos - hasher.getK(), rhash, c ^ 3u));
+            accumulatedTime_extendRight += t.get_nanoseconds();
+            numCalls_extendRight++;
             return result;
         }
 
         htype extendLeft(unsigned char c) const { // profile this
+            logging::TimeSpace t;
             htype result = std::min(hasher.extendLeft(seq, pos, fhash, c),
                             hasher.extendRight(!seq, seq.size() - pos - hasher.getK(), rhash, c ^ 3u));
+            accumulatedTime_extendLeft += t.get_nanoseconds();
+            numCalls_extendLeft++;
             return result;
         }
 
         KWH next() const { // profile this
+            logging::TimeSpace t;
             KWH result = {hasher, seq, pos + 1, hasher.next(seq, pos, fhash),
                     hasher.prev(!seq, seq.size() - pos - hasher.getK(), rhash)};
+            accumulatedTime_next += t.get_nanoseconds();
+            numCalls_next++;
             return result;
         }
 
         KWH prev() const { // profile this
+            logging::TimeSpace t;
             KWH result = {hasher, seq, pos - 1, hasher.prev(seq, pos, fhash),
                     hasher.next(!seq, seq.size() - pos - hasher.getK(), rhash)};
+            accumulatedTime_prev += t.get_nanoseconds();
+            numCalls_prev++;
             return result;
         }
 
         bool hasNext() const { // profile this
+            logging::TimeSpace t;
             bool result = hasher.hasNext(seq, pos);
+            accumulatedTime_hasNext += t.get_nanoseconds();
+            numCalls_hasNext++;
             return result;
         }
 
         bool hasPrev() const { // profile this
+            logging::TimeSpace t;
             bool result = hasher.hasPrev(seq, pos);
+            accumulatedTime_hasPrev += t.get_nanoseconds();
+            numCalls_hasPrev++;
             return result;
         }
 

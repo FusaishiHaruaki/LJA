@@ -456,5 +456,6 @@ int main(int argc, char **argv) {
     logger.info() << "Final assembly can be found here: " << uncompressed_results[0] << std::endl;
     logger.info() << "LJA pipeline finished" << std::endl;
     cout << "LJA total time: " << t.get() << endl;
+    KWH::print_times();
     return 0;
 }
