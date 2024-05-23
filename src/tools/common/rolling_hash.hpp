@@ -158,6 +158,8 @@ namespace hashing {
                             hasher.extendLeft(!seq, seq.size() - pos - hasher.getK(), rhash, c ^ 3u));
             accumulatedTime_extendRight += t.get_nanoseconds();
             numCalls_extendRight++;
+            std::cout << "numCalls_extendRight: " << numCalls_extendRight << std::endl;
+            std::cout << "accumulatedTime_extendRight: " << accumulatedTime_extendRight << std::endl;
             return result;
         }
 
