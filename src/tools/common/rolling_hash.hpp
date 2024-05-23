@@ -137,18 +137,18 @@ namespace hashing {
 
         static void print_times() {
             std::stringstream ss;
-            ss << "accumulatedTime_extendRight: " << accumulatedTime_extendRight
+            ss << "accumulatedTime_extendRight: " << hashing::KWH::accumulatedTime_extendRight
             << "\nnumCalls_extendRight: " << numCalls_extendRight
-            << "\naccumulatedTime_extendLeft: " << accumulatedTime_extendLeft
-            << "\nnumCalls_extendLeft: " << numCalls_extendLeft
-            << "\naccumulatedTime_next: " << accumulatedTime_next
-            << "\nnumCalls_next: " << numCalls_next
-            << "\naccumulatedTime_prev: " << accumulatedTime_prev
-            << "\nnumCalls_prev: " << numCalls_prev
-            << "\naccumulatedTime_hasNext: " << accumulatedTime_hasNext
-            << "\nnumCalls_hasNext: " << numCalls_hasNext
-            << "\naccumulatedTime_hasPrev: " << accumulatedTime_hasPrev
-            << "\nnumCalls_hasPrev: " << numCalls_hasPrev;
+            << "\naccumulatedTime_extendLeft: " << hashing::KWH::accumulatedTime_extendLeft
+            << "\nnumCalls_extendLeft: " << hashing::KWH::numCalls_extendLeft
+            << "\naccumulatedTime_next: " << hashing::KWH::accumulatedTime_next
+            << "\nnumCalls_next: " << hashing::KWH::numCalls_next
+            << "\naccumulatedTime_prev: " << hashing::KWH::accumulatedTime_prev
+            << "\nnumCalls_prev: " << hashing::KWH::numCalls_prev
+            << "\naccumulatedTime_hasNext: " << hashing::KWH::accumulatedTime_hasNext
+            << "\nnumCalls_hasNext: " << hashing::KWH::numCalls_hasNext
+            << "\naccumulatedTime_hasPrev: " << hashing::KWH::accumulatedTime_hasPrev
+            << "\nnumCalls_hasPrev: " << hashing::KWH::numCalls_hasPrev;
             std::cout << ss.str() << endl;
         }
 
